@@ -9,4 +9,9 @@ public class PlayerInputController : MonoBehaviour
     {
         return Input.GetAxis("Mouse X");
     }
+
+    public float GetVerticalAxis()
+    {
+        return Input.GetAxis("Mouse Y");
+    }
 }

@@ -7,7 +7,7 @@ public class CueView : MonoBehaviour
 {
     public Transform ball0Transform;
 
-    private float mouseInput = 0f;
+    private float mouseXInput = 0f, mouseYInput = 0f;
     private CueInteraction cueInteraction = new CueInteraction();
     [SerializeField] private float sensitivity = 2.0f;
     [SerializeField] private PlayerInputController playerInputController;
@@ -23,10 +23,15 @@ public class CueView : MonoBehaviour
     {
         if (ball0Transform == null) return;
 
-        transform.position = ball0Transform.position;
-        mouseInput = playerInputController.GetHorizontalAxis();
-        cueInteraction.CaculateAngle(mouseInput, sensitivity);
-        transform.rotation = Quaternion.Euler(0, cueInteraction.CurrentAngle, 0);
-        transform.position = cueInteraction.GetPositionAroundBall0(ball0Transform.position, ballPhysicConfig.radius, cuePhysicConfig.offsetFromBall0);
+        mouseXInput = playerInputController.GetHorizontalAxis();
+        mouseYInput = playerInputController.GetVerticalAxis();
+
+        cueInteraction.CaculateAngle(mouseXInput, sensitivity);
+        cueInteraction.CaculatePitch(mouseYInput, cuePhysicConfig.minPitch, cuePhysicConfig.maxPitch, sensitivity);
+
+        transform.rotation = Quaternion.Euler(cueInteraction.CurrentPitch, cueInteraction.CurrentAngle, 0);
+        
+        transform.position = cueInteraction.GetPositionAroundBall0(ball0Transform.position, 
+                             ballPhysicConfig.radius, cuePhysicConfig.offsetFromBall0);
     }
 }

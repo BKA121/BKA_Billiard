@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class CueInteraction 
 {
-    private float currentAngle;
+    private float currentAngle; // Goc xoay theo phuong ngang
+    private float currentPitch; // Goc do doc cua gay theo phuong thang dung
 
     public float CurrentAngle => currentAngle;
+    public float CurrentPitch => currentPitch;
 
     // Tinh toan goc xoay theo phuong ngang
     public void CaculateAngle(float mouseInputX, float sensitivity)
@@ -14,10 +16,16 @@ public class CueInteraction
         currentAngle += mouseInputX * sensitivity;
     }
 
+    public void CaculatePitch(float mouseInputY, float minPitch, float maxPitch, float sensitivity)
+    {
+        currentPitch += mouseInputY * sensitivity;
+        currentPitch = Mathf.Clamp(currentPitch, minPitch, maxPitch);
+    }
+
     public Vector3 GetPositionAroundBall0(Vector3 ball0, float radius, float offsetFromBall0)
     {
-        float offset = radius + offsetFromBall0;
-        Quaternion rotation = Quaternion.Euler(0, currentAngle, 0);
-        return ball0 - (rotation * Vector3.forward * offset);
+        float totalOffset = radius + offsetFromBall0;
+        Quaternion rotation = Quaternion.Euler(currentPitch, currentAngle, 0);
+        return ball0 - (rotation * Vector3.forward * totalOffset);
     }
 }
