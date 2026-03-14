@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9863afa4f5d0afd4a897a1f162e71a5e, type: 3}
-  m_Name: CuePhysicConfig
+  m_Script: {fileID: 11500000, guid: ee9f2872a03c3724ba8c86af46792ef6, type: 3}
+  m_Name: CameraConfig
   m_EditorClassIdentifier: 
-  offsetFromBall0: 0.01
-  minPitch: -30
-  maxPitch: 5
+  minPitch: -40
+  maxPitch: 0
