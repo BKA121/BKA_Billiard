@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CuePhysicConfig
   m_EditorClassIdentifier: 
   offsetFromBall0: 0.01
-  minPitch: -30
-  maxPitch: 5
+  maxPull: 0.35
+  sensitivityPull: 0.03

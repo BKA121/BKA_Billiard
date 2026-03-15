@@ -26,16 +26,18 @@ public class CueAimState : ICueState
 
     public void UpdateView()
     {
-        _view.transform.rotation = Quaternion.Euler(0, _interaction.CurrentAngle, 0);
+        _view.transform.rotation = Quaternion.Euler(-7f, _interaction.CurrentAngle, 0);
 
-        _view.transform.position = _interaction.GetPositionAroundBall0(
-            _view.ball0Transform.position,
-            _view.ballPhysicConfig.radius,
-            _view.cuePhysicConfig.offsetFromBall0);
+        _view.transform.position = _interaction.GetPositionAroundBall0(_view.ball0Transform.position);
 
         if (_view.cameraPlayer != null)
         {
             _view.cameraPlayer.rotation = Quaternion.Euler(_interaction.CameraPitch, _interaction.CurrentAngle, 0);
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            _view.ChangeState(_view.PowerState);
         }
     }
 

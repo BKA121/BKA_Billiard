@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: CameraConfig
   m_EditorClassIdentifier: 
   minPitch: -40
-  maxPitch: 0
+  maxPitch: 5
