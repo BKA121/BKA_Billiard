@@ -9,4 +9,7 @@ public class CuePhysicConfig : ScriptableObject
     public float offsetFromBall0 = 0.01f; // Do lech cua gay so voi bi trang
     public float maxPull = 0.3f; // Do dai keo cue toi da
     public float sensitivityPull = 0.2f; // Do nhay keo cue
+    public float forceMultiplier = 20f; // He so nhan luc danh
+    public float maxForce = 100f;       // Max luc
+    public float minForce = 5f;         // Min luc
 }

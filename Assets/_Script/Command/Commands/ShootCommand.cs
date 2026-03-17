@@ -17,6 +17,6 @@ public class ShootCommand : ICommand
 
     public void Execute()
     {
-        Debug.Log("Danh");
+        Debug.Log(_force);
     }
 }

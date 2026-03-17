@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class CueInteraction 
 {
+    private float _lastPull;
+
     public float CurrentAngle { get; private set; }
-    public float CameraPitch { get; private set; }
-    public float CurrentPull { get; private set; }
+    public float CameraPitch { get; private set; } // Goc di chuyen cua camera player
+    public float CurrentPull { get; private set; } // Do doi khi keo gay
+    public float CurrentStrikeSpeed { get; private set; } // Van toc danh bi trong 1 frame
 
     // Ham tinh toan xoay gay de ngam ban
     public void CaculateAngle(float mouseInputX, float sensitivity)
@@ -29,8 +32,13 @@ public class CueInteraction
     // Ham tinh toan khi nhap cue
     public void CalculatePull(float mouseInputY, float sensitivity, float maxPull)
     {
+        _lastPull = CurrentPull;
+
         CurrentPull -= mouseInputY * sensitivity;
         CurrentPull = Mathf.Clamp(CurrentPull, -0.01f, maxPull); // -0.01f la khi cham bi trang
+
+        float frameVelocity = (_lastPull - CurrentPull) / Time.deltaTime;
+        CurrentStrikeSpeed = Mathf.Lerp(CurrentStrikeSpeed, Mathf.Max(0, frameVelocity), 0.5f);
     }
 
     public void ResetPull()

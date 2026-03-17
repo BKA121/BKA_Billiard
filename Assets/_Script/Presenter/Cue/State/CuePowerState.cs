@@ -41,7 +41,7 @@ public class CuePowerState : ICueState
         if (_interaction.CurrentPull <= -0.01f)
         {
             OnCueHitBall();
-            _view.ChangeState(_view.AimState); // Sau la chuyen ve trang thai an cue
+            _view.ChangeState(_view.AimState); // Sau la chuyen ve trang thai hintcue
         }
     }
 
@@ -55,9 +55,10 @@ public class CuePowerState : ICueState
     private void OnCueHitBall()
     {
         Vector3 dir = _view.transform.forward;
+        float speed = _interaction.CurrentStrikeSpeed;
 
-        // tinh lai luc danh
-        float force = _view.cuePhysicConfig.sensitivityPull;
+        // Tinh luc danh
+        float force = _view.cuePhysicConfig.forceMultiplier * speed;
 
         ICommand shoot = new ShootCommand(
             CommandDispatcher.dispatcher.CoreManager,
