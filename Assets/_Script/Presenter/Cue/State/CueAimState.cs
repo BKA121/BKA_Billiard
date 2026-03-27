@@ -28,7 +28,7 @@ public class CueAimState : ICueState
     {
         _view.transform.rotation = Quaternion.Euler(-7f, _interaction.CurrentAngle, 0);
 
-        _view.transform.position = _interaction.GetPositionAroundBall0(_view.ball0Transform.position);
+        _view.transform.position = _interaction.GetPositionAroundBall0(_view.ball0Position);
 
         if (_view.cameraPlayer != null)
         {

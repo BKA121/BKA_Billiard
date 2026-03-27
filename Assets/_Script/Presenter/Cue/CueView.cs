@@ -8,11 +8,14 @@ public class CueView : MonoBehaviour
     private CueInteraction _cueInteraction = new CueInteraction();
     [SerializeField] private float _sensitivity = 0.3f;
     private ICueState _currentState;
+    private BallState _ballState; 
+    private bool _isInitialized = false;
+    private PhysicVector3 ball0Pos;
 
     public CueAimState AimState { get; private set; }
     public CuePowerState PowerState { get; private set; }
     public Transform cueModel;
-    public Transform ball0Transform;
+    public Vector3 ball0Position;
     public PlayerInputController playerInputController;
     public BallPhysicConfig ballPhysicConfig;
     public CuePhysicConfig cuePhysicConfig;
@@ -20,17 +23,21 @@ public class CueView : MonoBehaviour
     public Transform cameraPlayer;
     public float Sensitivity => _sensitivity;
 
-    private void Start()
+    public void Initialize(BallState ballState)
     {
+        _ballState = ballState;
+        _isInitialized = true;
+
         AimState = new CueAimState(this, _cueInteraction);
         PowerState = new CuePowerState(this, _cueInteraction);
-
         ChangeState(AimState);
     }
 
     private void Update()
     {
-        if (ball0Transform == null || _currentState == null) return;
+        if (!_isInitialized || _currentState == null) return;
+
+        UpdateCuePosition();
 
         _currentState.HandleInput();
         _currentState.UpdateView();
@@ -43,4 +50,10 @@ public class CueView : MonoBehaviour
         _currentState?.Enter();
     }
 
+    private void UpdateCuePosition()
+    {
+        ball0Pos = _ballState.Positions[0];
+
+        ball0Position = new Vector3(ball0Pos.X, ball0Pos.Y, ball0Pos.Z);
+    }
 }

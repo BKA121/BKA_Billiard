@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class CommandDispatcher : MonoBehaviour
 {
-    public static CommandDispatcher dispatcher { get; private set; }
+    public static CommandDispatcher Instance { get; private set; }
 
-    [SerializeField] private CoreManager _coreManager;
-    public CoreManager CoreManager => _coreManager;
 
     private void Awake()
     {
-        dispatcher = this;
+        Instance = this;
     }
 
     public void ExecuteCommand(ICommand command)

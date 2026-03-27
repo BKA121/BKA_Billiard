@@ -60,12 +60,8 @@ public class CuePowerState : ICueState
         // Tinh luc danh
         float force = _view.cuePhysicConfig.forceMultiplier * speed;
 
-        ICommand shoot = new ShootCommand(
-            CommandDispatcher.dispatcher.CoreManager,
-            dir,
-            force
-        );
+        ICommand shoot = new ShootCommand(dir, force);
 
-        CommandDispatcher.dispatcher.ExecuteCommand(shoot);
+        CommandDispatcher.Instance.ExecuteCommand(shoot);
     }
 }
