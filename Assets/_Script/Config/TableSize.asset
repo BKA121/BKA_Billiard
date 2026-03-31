@@ -14,4 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   length: 2.5428
   width: 1.2424
+  Mr: 0.99
   pocketOffset: 0.05
+  GetPocketCenters:
+  - {x: -0.6212, y: 0, z: 1.2714}
+  - {x: 0.6212, y: 0, z: 1.2714}
+  - {x: -0.6212, y: 0, z: -1.2714}
+  - {x: 0.6212, y: 0, z: -1.2714}
+  - {x: -0.6212, y: 0, z: 0}
+  - {x: 0.6212, y: 0, z: 0}

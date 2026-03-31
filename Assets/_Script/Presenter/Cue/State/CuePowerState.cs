@@ -25,7 +25,7 @@ public class CuePowerState : ICueState
         float mouseY = _view.playerInputController.GetVerticalAxis();
         _interaction.CalculatePull(mouseY, _view.cuePhysicConfig.sensitivityPull, _view.cuePhysicConfig.maxPull);
 
-        if (Input.GetKeyUp(KeyCode.S))
+        if (_view.playerInputController.IsExitShootAction())
         {
             _view.ChangeState(_view.AimState);
         }
@@ -35,13 +35,13 @@ public class CuePowerState : ICueState
     {
         if (_view.cueModel != null)
         {
-            _view.cueModel.localPosition = new Vector3(0, 0, _defaultLocalZ + _interaction.CurrentPull);
+            _view.cueModel.localPosition = new Vector3(0, 0, _defaultLocalZ - _interaction.CurrentPull);
         }
 
         if (_interaction.CurrentPull <= -0.01f)
         {
             OnCueHitBall();
-            _view.ChangeState(_view.AimState); // Sau la chuyen ve trang thai hintcue
+            _view.ChangeState(_view.HintState); 
         }
     }
 
@@ -54,13 +54,13 @@ public class CuePowerState : ICueState
 
     private void OnCueHitBall()
     {
-        Vector3 dir = _view.transform.forward;
-        float speed = _interaction.CurrentStrikeSpeed;
+        PhysicVector3 dir = new PhysicVector3(_view.transform.forward.x, _view.transform.forward.y, _view.transform.forward.z);
+        float speed = _interaction.CurrentStrikeSpeed * _view.cuePhysicConfig.forceMultiplier;
 
         // Tinh luc danh
-        float force = _view.cuePhysicConfig.forceMultiplier * speed;
+        float force = speed;
 
-        ICommand shoot = new ShootCommand(dir, force);
+        ICommand shoot = new ShootCommand(CommandDispatcher.Instance.coreManager, dir, force);
 
         CommandDispatcher.Instance.ExecuteCommand(shoot);
     }

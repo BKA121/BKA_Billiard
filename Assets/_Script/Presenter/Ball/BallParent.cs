@@ -7,6 +7,7 @@ public class BallParent : MonoBehaviour
     private BallView[] _ballViews;
     private BallState _ballState;
     [SerializeField] private GameObject[] ballPrefabs;
+    public GameController gameController;
 
     public void Initialize(BallState state)
     {
@@ -30,6 +31,8 @@ public class BallParent : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!gameController.coreManager.isCaculateShoot) return;
+
         if (_ballState == null || _ballViews == null) return;
 
         for (int i = 0; i < _ballViews.Length; i++)
@@ -38,6 +41,7 @@ public class BallParent : MonoBehaviour
             bool active = _ballState.IsActive[i];
 
             Vector3 unityPos = new Vector3(corePos.X, corePos.Y, corePos.Z);
+            //if(i==0) Debug.Log(unityPos);
 
             _ballViews[i].Render(unityPos, active);
         }

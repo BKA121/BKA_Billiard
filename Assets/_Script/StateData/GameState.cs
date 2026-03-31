@@ -5,25 +5,27 @@ using UnityEngine;
 
 public class GameState
 {
-    public PhysicData PhysicData { get; }
-    public BallState BallState { get; }
+    public PhysicData physicData;
+    public BallState ballState;
+
+    // Sau con cac state nhu: turn, score...
 
     public GameState(PhysicData physicData)
     {
-        PhysicData = physicData;
-        BallState = new BallState(16);
+        this.physicData = physicData;
+        ballState = new BallState(16);
         Setup8BallPositionForNewMatch();
     }
 
     // Xep 8 bi cho van dau 
     public void Setup8BallPositionForNewMatch()
     {
-        float R = PhysicData.BallRadius;
+        float R = physicData.BallRadius;
         float diameter = R * 2.01f;
         float rowDistance = R * 1.734f;
 
-        BallState.SetPosition(0, PhysicData.HeadSpot);
-        BallState.IsActive[0] = true;
+        ballState.SetPosition(0, physicData.HeadSpot);
+        ballState.IsActive[0] = true;
 
         System.Random _rng = new System.Random();
         List<int> solids = new List<int>();  // 1-7
@@ -72,7 +74,7 @@ public class GameState
             }
         }
 
-        PhysicVector3 apex = PhysicData.FootSpot;
+        PhysicVector3 apex = physicData.FootSpot;
 
         for (int row = 0; row < 5; row++)
         {
@@ -80,11 +82,11 @@ public class GameState
             {
                 int ballID = rackScheme[row, col];
 
-                float posX = apex.X - (row * rowDistance);
-                float posZ = apex.Z + (col - (row / 2f)) * diameter;
+                float posZ = apex.Z + (row * rowDistance);
+                float posX = apex.X + (col - (row / 2f)) * diameter;
 
-                BallState.SetPosition(ballID, new PhysicVector3(posX, R, posZ));
-                BallState.IsActive[ballID] = true;
+                ballState.SetPosition(ballID, new PhysicVector3(posX, 0, posZ));
+                ballState.IsActive[ballID] = true;
             }
         }
     }

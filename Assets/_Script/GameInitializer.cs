@@ -11,6 +11,8 @@ public class GameInitializer : MonoBehaviour
     public CueView cueView;
     public BallPhysicConfig ballConfig;
     public BallParent ballParent;
+    public CommandDispatcher commandDispatcher;
+    public GameController gameController;
 
     // Khoi tao lop du lieu vat ly thuan C# cho core su dung
     private PhysicData CreatePhysicData()
@@ -26,9 +28,8 @@ public class GameInitializer : MonoBehaviour
         }
 
         return new PhysicData(
-            tableConfig.length,
-            tableConfig.width,
-            ballConfig.radius,
+            tableConfig.length, tableConfig.width, tableConfig.Mr, tableConfig.WallBounce,
+            ballConfig.radius, ballConfig.mass,
             headSpot,
             footSpot,
             pockets
@@ -40,7 +41,9 @@ public class GameInitializer : MonoBehaviour
         PhysicData pureData = CreatePhysicData();
         _gameState = new GameState(pureData);
         _coreManager = new CoreManager(_gameState);
-        ballParent.Initialize(_gameState.BallState);
-        cueView.Initialize(_gameState.BallState);
+        ballParent.Initialize(_gameState.ballState);
+        cueView.Initialize(_gameState.ballState);
+        commandDispatcher.Initialize(_coreManager);
+        gameController.Initialized(_coreManager);
     }
 }

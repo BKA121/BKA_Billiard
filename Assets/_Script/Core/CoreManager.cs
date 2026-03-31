@@ -8,14 +8,30 @@ public class CoreManager
     private PhysicSystem _physicSystem;
     private GameState _gameState;
 
+    public bool isCaculateShoot = false;
+
     public CoreManager(GameState gameState)
     {
         _gameState = gameState;
-        _physicSystem = new PhysicSystem();
+        _physicSystem = new PhysicSystem(_gameState.physicData);
     }
 
-    public void HandlePhysic(Vector3 direction, float force)
+    // Bat cong tac isCaculateShoot de update trong gamecontroller goi CaculateShoot
+    public void PrepareCaculateShoot(PhysicVector3 direction, float force)
     {
-        _physicSystem.CaculateShoot(direction, force);
+        _physicSystem.InitialShoot(direction, force, _gameState.ballState);
+        isCaculateShoot = true;
+    }
+
+    public void CaculateShoot(float dt)
+    {
+        if (!isCaculateShoot) return;
+
+        _physicSystem.UpdatePhysicForFrame(dt);
+
+        //if (_physicSystem.AreBallsStatic())
+        //{
+        //    _isCaculateShoot = false;
+        //}
     }
 }

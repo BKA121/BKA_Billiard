@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9f2872a03c3724ba8c86af46792ef6, type: 3}
   m_Name: CameraConfig
   m_EditorClassIdentifier: 
-  minPitch: -40
-  maxPitch: 5
+  minPitch: 5
+  maxPitch: 20

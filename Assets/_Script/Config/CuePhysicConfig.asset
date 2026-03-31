@@ -15,3 +15,4 @@ MonoBehaviour:
   offsetFromBall0: 0.01
   maxPull: 0.4
   sensitivityPull: 0.02
+  forceMultiplier: 0.5

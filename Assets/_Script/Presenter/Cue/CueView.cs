@@ -6,7 +6,7 @@ using UnityEngine;
 public class CueView : MonoBehaviour
 {
     private CueInteraction _cueInteraction = new CueInteraction();
-    [SerializeField] private float _sensitivity = 0.3f;
+    [SerializeField] private float _sensitivity = 0.2f;
     private ICueState _currentState;
     private BallState _ballState; 
     private bool _isInitialized = false;
@@ -14,6 +14,8 @@ public class CueView : MonoBehaviour
 
     public CueAimState AimState { get; private set; }
     public CuePowerState PowerState { get; private set; }
+    public CueHintState HintState { get; private set; }
+
     public Transform cueModel;
     public Vector3 ball0Position;
     public PlayerInputController playerInputController;
@@ -30,6 +32,7 @@ public class CueView : MonoBehaviour
 
         AimState = new CueAimState(this, _cueInteraction);
         PowerState = new CuePowerState(this, _cueInteraction);
+        HintState = new CueHintState(this, _cueInteraction);
         ChangeState(AimState);
     }
 
@@ -37,7 +40,7 @@ public class CueView : MonoBehaviour
     {
         if (!_isInitialized || _currentState == null) return;
 
-        UpdateCuePosition();
+        UpdateCuePosition(); // Luon cap nhat vi tri bi trang cho cue
 
         _currentState.HandleInput();
         _currentState.UpdateView();

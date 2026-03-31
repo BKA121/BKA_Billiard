@@ -25,8 +25,8 @@ public class CueInteraction
 
     public Vector3 GetPositionAroundBall0(Vector3 ball0)
     {
-        Quaternion rotation = Quaternion.Euler(-7f, CurrentAngle, 0);
-        return ball0 + (rotation * Vector3.forward * 0);
+        Quaternion rotation = Quaternion.Euler(0, CurrentAngle, 0);
+        return ball0 + (rotation * Vector3.back * 0);
     }
 
     // Ham tinh toan khi nhap cue
