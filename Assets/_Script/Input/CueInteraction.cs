@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class CueInteraction
     public float CameraPitch { get; private set; } // Goc di chuyen cua camera player
     public float CurrentPull { get; private set; } // Do doi khi keo gay
     public float CurrentStrikeSpeed { get; private set; } // Van toc danh bi trong 1 frame
+
+    public float HeightSecondCam { get; private set; } // Do cao second cam
 
     // Ham tinh toan xoay gay de ngam ban
     public void CaculateAngle(float mouseInputX, float sensitivity)
@@ -39,6 +42,13 @@ public class CueInteraction
 
         float frameVelocity = (_lastPull - CurrentPull) / Time.deltaTime;
         CurrentStrikeSpeed = Mathf.Lerp(CurrentStrikeSpeed, Mathf.Max(0, frameVelocity), 0.5f);
+    }
+
+    // Tinh do cao second camera
+    public void CaculateHeightSecondCam(float mouseInputY, float minHeight, float maxHeight, float heightSpeed)
+    {
+        HeightSecondCam += mouseInputY * heightSpeed * Time.deltaTime;
+        HeightSecondCam = Mathf.Clamp(HeightSecondCam, minHeight, maxHeight);
     }
 
     public void ResetPull()

@@ -38,13 +38,15 @@ public class PhysicSystem
 
     public void UpdatePhysicForFrame(float dt)
     {
-        for(int i=0; i<_ballState.TotalBalls; i++)
+        ResolveBallToBallCollisions();
+
+        for (int i=0; i<_ballState.TotalBalls; i++)
         {
             if (!_ballState.IsActive[i]) continue;
 
             PhysicVector3 velocity = _ballState.Velocities[i];
 
-            if (velocity.SqrMagnitude() < 0.001f)
+            if (velocity.SqrMagnitude() < 0.0001f)
             {
                 _ballState.SetVelocity(i, new PhysicVector3(0, 0, 0));
                 continue;
@@ -74,7 +76,66 @@ public class PhysicSystem
             // Giam van toc moi frame do ma sat lan
             velocity *= Mathf.Pow(_physicData.Mr, dt);
             _ballState.SetVelocity(i, velocity);
-
         }
     }
+
+    public void ResolveBallToBallCollisions()
+    {
+        for (int i = 0; i < _ballState.TotalBalls; i++)
+        {
+            for (int j = i + 1; j < _ballState.TotalBalls; j++)
+            {
+                if (!_ballState.IsActive[i] || !_ballState.IsActive[j]) continue;
+
+                float distance = PhysicVector3.Distance(_ballState.Positions[i], _ballState.Positions[j]);
+                float minDistance = _r * 2.01f;
+
+                if (distance < minDistance)
+                {
+                    HandleBallCollision(i, j, distance, minDistance);
+                }
+            }
+        }
+    }
+
+    private void HandleBallCollision(int i, int j, float distance, float minDistance)
+    {
+        PhysicVector3 posI = _ballState.Positions[i];
+        PhysicVector3 posJ = _ballState.Positions[j];
+        PhysicVector3 velI = _ballState.Velocities[i];
+        PhysicVector3 velJ = _ballState.Velocities[j];
+
+        float overlap = minDistance - distance;
+
+        // Vector noi tam da chuan hoa
+        PhysicVector3 collisionNormal = (posI - posJ).Normalize();
+
+        // Dich toa do bi tranh chong lap
+        PhysicVector3 separation = collisionNormal * (overlap * 0.5f);
+        _ballState.SetPosition(i, posI + separation);
+        _ballState.SetPosition(j, posJ - separation);
+
+        // Thanh phan do lon van toc tren duong noi tam
+        float vInormal = velI.Dot(collisionNormal);
+        float vJnormal = velJ.Dot(collisionNormal);
+
+        if (vInormal - vJnormal > 0) return;
+
+        // Thanh phan vector van toc tren duong noi tam
+        PhysicVector3 velInormal = collisionNormal * vInormal;
+        PhysicVector3 velJnormal = collisionNormal * vJnormal;
+
+        // Thanh phan vector van toc theo phuong tiep tuyen
+        PhysicVector3 velItangent = velI - velInormal;
+        PhysicVector3 velJtangent = velJ - velJnormal;
+
+        float e = _physicData.ballRestitution; 
+
+        PhysicVector3 nextVelInormal = velJnormal * e;
+        PhysicVector3 nextVelJnormal = velInormal * e;
+
+        _ballState.SetVelocity(i, velItangent + nextVelInormal);
+        _ballState.SetVelocity(j, velJtangent + nextVelJnormal);
+    }
+
 }

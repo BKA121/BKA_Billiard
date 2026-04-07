@@ -14,7 +14,7 @@ public class CueView : MonoBehaviour
 
     public CueAimState AimState { get; private set; }
     public CuePowerState PowerState { get; private set; }
-    public CueHintState HintState { get; private set; }
+    public CueOverviewState OverViewState { get; private set; }
 
     public Transform cueModel;
     public Vector3 ball0Position;
@@ -22,7 +22,10 @@ public class CueView : MonoBehaviour
     public BallPhysicConfig ballPhysicConfig;
     public CuePhysicConfig cuePhysicConfig;
     public CameraConfig cameraConfig;
-    public Transform cameraPlayer;
+    public Transform firstCamera;
+    public Transform overviewAnchor;
+    public Transform cameraOffset;
+    public Camera secondCamera;
     public float Sensitivity => _sensitivity;
 
     public void Initialize(BallState ballState)
@@ -32,8 +35,8 @@ public class CueView : MonoBehaviour
 
         AimState = new CueAimState(this, _cueInteraction);
         PowerState = new CuePowerState(this, _cueInteraction);
-        HintState = new CueHintState(this, _cueInteraction);
-        ChangeState(AimState);
+        OverViewState = new CueOverviewState(this, _cueInteraction);
+        ChangeState(OverViewState);
     }
 
     private void Update()

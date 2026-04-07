@@ -41,7 +41,7 @@ public class CuePowerState : ICueState
         if (_interaction.CurrentPull <= -0.01f)
         {
             OnCueHitBall();
-            _view.ChangeState(_view.HintState); 
+            _view.ChangeState(_view.OverViewState); 
         }
     }
 

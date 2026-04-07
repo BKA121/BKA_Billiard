@@ -22,12 +22,12 @@ public class TableSize : ScriptableObject
     // Dung tu vi tri pha bi
     public Vector3[] GetPocketCenters = new Vector3[] 
     {
-    new Vector3(-0.6212f, 0, 1.2714f),  // Tren trai
-    new Vector3(0.6212f, 0, 1.2714f),   // Tren phai
-    new Vector3(-0.6212f, 0, -1.2714f),  // Duoi trai
-    new Vector3(0.6212f, 0, -1.2714f),   // Duoi phai
+    new Vector3(-0.7077f, 0, 1.3542f),  // Tren trai
+    new Vector3(0.7077f, 0, 1.3542f),   // Tren phai
+    new Vector3(-0.7077f, 0, -1.3542f),  // Duoi trai
+    new Vector3(0.7077f, 0, -1.3542f),   // Duoi phai
 
-    new Vector3(-0.6212f, 0, 0),        // Giua trai
-    new Vector3(0.6212f, 0, 0)          // Giua phai
+    new Vector3(-0.7077f, 0, 0),        // Giua trai
+    new Vector3(0.7077f, 0, 0)          // Giua phai
     };
 }

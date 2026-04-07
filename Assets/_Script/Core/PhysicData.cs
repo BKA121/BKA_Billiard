@@ -36,6 +36,19 @@ public struct PhysicVector3
 
     public float Magnitude() => (float)System.Math.Sqrt(SqrMagnitude());
 
+    public static float Distance(PhysicVector3 a, PhysicVector3 b)
+    {
+        float dx = a.X - b.X;
+        float dy = a.Y - b.Y;
+        float dz = a.Z - b.Z;
+        return Mathf.Sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
+    public float Dot(PhysicVector3 other)
+    {
+        return X * other.X + Y * other.Y + Z * other.Z;
+    }
+
     public PhysicVector3 Normalize()
     {
         float mag = Magnitude();
@@ -59,10 +72,11 @@ public class PhysicData
     // BallPhysicConfig data
     public float BallRadius { get; }
     public float mBall { get; } // khoi luong ball
+    public float ballRestitution { get; } // he so hoi phuc sau va cham bi
 
 
     public PhysicData(float length, float width, float Mr, float WallBounce,
-                      float ballRadius, float mass,
+                      float ballRadius, float mass, float ballRestitution,
                       PhysicVector3 headSpot, PhysicVector3 footSpot, PhysicVector3[] pockets)
     {
         Length = length;
@@ -72,6 +86,7 @@ public class PhysicData
 
         this.mBall = mass;
         BallRadius = ballRadius;
+        this.ballRestitution = ballRestitution;
 
         HeadSpot = headSpot;
         FootSpot = footSpot;
