@@ -1073,68 +1073,6 @@ Transform:
   - {fileID: 1140793758}
   m_Father: {fileID: 162269107}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &895676536
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1024011413}
-    m_Modifications:
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.6212
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1.2714
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4551246081780928263, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-      propertyPath: m_Name
-      value: Ball0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 297da309383a6864699b8e9ad753f447, type: 3}
---- !u!4 &895676537 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2142711047191560515, guid: 297da309383a6864699b8e9ad753f447, type: 3}
-  m_PrefabInstance: {fileID: 895676536}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &909008595
 GameObject:
   m_ObjectHideFlags: 0
@@ -1164,7 +1102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a678b7cf3c4a054fbb78ac8d51fd627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dt: 0.02
 --- !u!4 &909008597
 Transform:
   m_ObjectHideFlags: 0
@@ -1283,8 +1220,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 895676537}
+  m_Children: []
   m_Father: {fileID: 162269107}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1024011414
@@ -1341,14 +1277,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1140793757}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 1.326, y: 0.315, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.315, z: -1.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2011552731}
   m_Father: {fileID: 891652716}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1151158032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1655,7 +1591,7 @@ Transform:
   m_GameObject: {fileID: 1525442852}
   serializedVersion: 2
   m_LocalRotation: {x: 0.06104851, y: 0, z: 0, w: 0.99813485}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.649}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1675,7 +1611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72966fc24d0e1524bbeeb7684c6e8f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sensitivity: 0.2
+  _sensitivity: 5
   cueModel: {fileID: 919672842}
   ball0Position: {x: 0, y: 0, z: 0}
   playerInputController: {fileID: 1615920909}

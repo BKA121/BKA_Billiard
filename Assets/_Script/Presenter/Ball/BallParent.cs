@@ -29,7 +29,7 @@ public class BallParent : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         if (!gameController.coreManager.isCaculateShoot) return;
 
@@ -41,7 +41,6 @@ public class BallParent : MonoBehaviour
             bool active = _ballState.IsActive[i];
 
             Vector3 unityPos = new Vector3(corePos.X, corePos.Y, corePos.Z);
-            //if(i==0) Debug.Log(unityPos);
 
             _ballViews[i].Render(unityPos, active);
         }

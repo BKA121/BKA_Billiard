@@ -29,9 +29,9 @@ public class CoreManager
 
         _physicSystem.UpdatePhysicForFrame(dt);
 
-        //if (_physicSystem.AreBallsStatic())
-        //{
-        //    _isCaculateShoot = false;
-        //}
+        if (_physicSystem.CheckBallsStatic())
+        {
+            isCaculateShoot = false;
+        }
     }
 }

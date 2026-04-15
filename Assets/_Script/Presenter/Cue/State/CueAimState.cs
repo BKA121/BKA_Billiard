@@ -13,7 +13,11 @@ public class CueAimState : ICueState
         _interaction = interaction;
     }
 
-    public void Enter() { }
+    public void Enter()
+    {
+        float cueRotationY = _view.overviewAnchor.transform.rotation.eulerAngles.y;
+        _view.transform.rotation = Quaternion.Euler(0, cueRotationY, 0);
+    }
 
     public void HandleInput()
     {
@@ -38,6 +42,11 @@ public class CueAimState : ICueState
         if (_view.playerInputController.IsShootAction())
         {
             _view.ChangeState(_view.PowerState);
+        }
+
+        if (_view.playerInputController.IsSwitchViewPressed())
+        {
+            _view.ChangeState(_view.OverViewState);
         }
     }
 

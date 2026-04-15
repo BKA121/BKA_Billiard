@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct PocketDataPhysicVector3
+{
+    public PhysicVector3 upA, upB;
+    public PhysicVector3 downA, downB;
+    public PhysicVector3 center;
+}
+
 public struct PhysicVector3
 {
     public float X;
@@ -44,6 +51,7 @@ public struct PhysicVector3
         return Mathf.Sqrt(dx * dx + dy * dy + dz * dz);
     }
 
+    // Tich vo huong
     public float Dot(PhysicVector3 other)
     {
         return X * other.X + Y * other.Y + Z * other.Z;
@@ -64,9 +72,11 @@ public class PhysicData
     public float Width { get; }
     public PhysicVector3 HeadSpot { get; }
     public PhysicVector3 FootSpot { get; }
-    public PhysicVector3[] PocketCenters { get; }
+    public PocketDataPhysicVector3[] Pockets { get; }
     public float Mr { get; } // ma sat lan
     public float WallBounce { get; } // he so nay thanh bang
+    public float offsetPocketCorner { get; }
+    public float offsetPocketCenter { get; }
 
 
     // BallPhysicConfig data
@@ -75,14 +85,16 @@ public class PhysicData
     public float ballRestitution { get; } // he so hoi phuc sau va cham bi
 
 
-    public PhysicData(float length, float width, float Mr, float WallBounce,
+    public PhysicData(float length, float width, float Mr, float WallBounce, float offsetPocketCorner, float offsetPocketCenter,
                       float ballRadius, float mass, float ballRestitution,
-                      PhysicVector3 headSpot, PhysicVector3 footSpot, PhysicVector3[] pockets)
+                      PhysicVector3 headSpot, PhysicVector3 footSpot, PocketDataPhysicVector3[] pockets)
     {
         Length = length;
         Width = width;
         this.Mr = Mr;
         this.WallBounce = WallBounce;
+        this.offsetPocketCorner = offsetPocketCorner;
+        this.offsetPocketCenter = offsetPocketCenter;
 
         this.mBall = mass;
         BallRadius = ballRadius;
@@ -90,6 +102,6 @@ public class PhysicData
 
         HeadSpot = headSpot;
         FootSpot = footSpot;
-        PocketCenters = pockets;
+        Pockets = pockets;
     }
 }

@@ -5,18 +5,23 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public CoreManager coreManager;
-    [SerializeField] private float dt = 0.02f;
+    private float _dt;
 
     public void Initialized(CoreManager coreManager)
     {
         this.coreManager = coreManager;
     }
 
-    void Update()
+    private void Start()
+    {
+        _dt = Time.fixedDeltaTime;
+    }
+
+    void FixedUpdate()
     {
         if (coreManager.isCaculateShoot)
         {
-            coreManager.CaculateShoot(dt);
+            coreManager.CaculateShoot(_dt);
         }
     }
 }

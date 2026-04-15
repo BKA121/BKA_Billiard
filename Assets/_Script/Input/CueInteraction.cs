@@ -17,12 +17,12 @@ public class CueInteraction
     // Ham tinh toan xoay gay de ngam ban
     public void CaculateAngle(float mouseInputX, float sensitivity)
     {
-        CurrentAngle += mouseInputX * sensitivity;
+        CurrentAngle += mouseInputX * Time.deltaTime * sensitivity;
     }
 
     public void CaculateCameraPitch(float mouseInputY, float minPitch, float maxPitch, float sensitivity)
     {
-        CameraPitch += mouseInputY * sensitivity;
+        CameraPitch += mouseInputY * Time.deltaTime * sensitivity;
         CameraPitch = Mathf.Clamp(CameraPitch, minPitch, maxPitch);
     }
 
@@ -37,7 +37,7 @@ public class CueInteraction
     {
         _lastPull = CurrentPull;
 
-        CurrentPull -= mouseInputY * sensitivity;
+        CurrentPull -= mouseInputY * Time.deltaTime * sensitivity;
         CurrentPull = Mathf.Clamp(CurrentPull, -0.01f, maxPull); // -0.01f la khi cham bi trang
 
         float frameVelocity = (_lastPull - CurrentPull) / Time.deltaTime;

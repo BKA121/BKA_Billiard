@@ -20,15 +20,23 @@ public class GameInitializer : MonoBehaviour
         PhysicVector3 headSpot = new PhysicVector3(tableConfig.HeadSpot.x, tableConfig.HeadSpot.y, tableConfig.HeadSpot.z);
         PhysicVector3 footSpot = new PhysicVector3(tableConfig.FootSpot.x, tableConfig.FootSpot.y, tableConfig.FootSpot.z);
 
-        PhysicVector3[] pockets = new PhysicVector3[tableConfig.GetPocketCenters.Length];
-        for (int i = 0; i < pockets.Length; i++)
+        PocketDataPhysicVector3[] pockets = new PocketDataPhysicVector3[tableConfig.pockets.Length];
+        for (int i = 0; i < tableConfig.pockets.Length; i++)
         {
-            var p = tableConfig.GetPocketCenters[i];
-            pockets[i] = new PhysicVector3(p.x, p.y, p.z);
+            var p = tableConfig.pockets[i];
+
+            pockets[i] = new PocketDataPhysicVector3
+            {
+                upA = new PhysicVector3(p.upA.x, p.upA.y, p.upA.z),
+                upB = new PhysicVector3(p.upB.x, p.upB.y, p.upB.z),
+                downA = new PhysicVector3(p.downA.x, p.downA.y, p.downA.z),
+                downB = new PhysicVector3(p.downB.x, p.downB.y, p.downB.z), 
+                center = new PhysicVector3(p.center.x, p.center.y, p.center.z)
+            };
         }
 
         return new PhysicData(
-            tableConfig.length, tableConfig.width, tableConfig.Mr, tableConfig.WallBounce,
+            tableConfig.length, tableConfig.width, tableConfig.Mr, tableConfig.WallBounce, tableConfig.offsetPocketCorner, tableConfig.offsetPocketCenter,
             ballConfig.radius, ballConfig.mass, ballConfig.restitution,
             headSpot,
             footSpot,
@@ -38,6 +46,9 @@ public class GameInitializer : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0;
+
         PhysicData pureData = CreatePhysicData();
         _gameState = new GameState(pureData);
         _coreManager = new CoreManager(_gameState);

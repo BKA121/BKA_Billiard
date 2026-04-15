@@ -1,6 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+[Serializable] 
+public struct PocketData
+{
+    // Moi lo co 4 diem, A la diem nhon mom lo, B la diem trong lo, AB tao thanh vecto mat cheo mom lo
+    public Vector3 upA, upB;
+    public Vector3 downA, downB;
+    public Vector3 center;
+}
 
 [CreateAssetMenu(fileName = "TableSize", menuName = "ScriptableObject/TableSize")]
 public class TableSize : ScriptableObject
@@ -17,17 +27,9 @@ public class TableSize : ScriptableObject
     public Vector3 FootSpot => new Vector3(0, 0, 0.6521f);
 
 
-    // Ban kinh lo
-    public float pocketOffset = 0.05f;
-    // Dung tu vi tri pha bi
-    public Vector3[] GetPocketCenters = new Vector3[] 
-    {
-    new Vector3(-0.7077f, 0, 1.3542f),  // Tren trai
-    new Vector3(0.7077f, 0, 1.3542f),   // Tren phai
-    new Vector3(-0.7077f, 0, -1.3542f),  // Duoi trai
-    new Vector3(0.7077f, 0, -1.3542f),   // Duoi phai
+    // Khoang cach tam lo toi thanh bang
+    public float offsetPocketCorner = 0.0702f;
+    public float offsetPocketCenter = 0.0897f;
+    public PocketData[] pockets = new PocketData[6];
 
-    new Vector3(-0.7077f, 0, 0),        // Giua trai
-    new Vector3(0.7077f, 0, 0)          // Giua phai
-    };
 }

@@ -15,8 +15,9 @@ public class CueOverviewState : ICueState
 
     public void Enter()
     {
-        Vector3 lastShotDir = _view.transform.forward;
-        _view.overviewAnchor.rotation = Quaternion.LookRotation(new Vector3(lastShotDir.x, 0, lastShotDir.z));
+        float cueRotationY = _view.transform.rotation.eulerAngles.y;
+        _view.overviewAnchor.transform.rotation = Quaternion.Euler(0, cueRotationY, 0);
+
         _view.firstCamera.gameObject.SetActive(false);
         _view.secondCamera.gameObject.SetActive(true);
         _view.cueModel.gameObject.SetActive(false);
@@ -35,7 +36,7 @@ public class CueOverviewState : ICueState
     {
         _view.secondCamera.transform.LookAt(_view.overviewAnchor.position);
         _view.overviewAnchor.rotation = Quaternion.Euler(0, _interaction.CurrentAngle, 0);
-        _view.cameraOffset.localPosition = new Vector3(1.7f, _interaction.HeightSecondCam, 0);
+        _view.cameraOffset.localPosition = new Vector3(0, _interaction.HeightSecondCam, -1.7f);
 
         if (_view.playerInputController.IsSwitchViewPressed())
         {

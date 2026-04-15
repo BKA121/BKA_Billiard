@@ -8,8 +8,13 @@ public class PhysicSystem
     private PhysicData _physicData;
     private float _limitX;
     private float _limitZ;
+    private float _offsetPocketCorner;
+    private float _offsetPocketCenter;
+    private float _boundTableX;
+    private float _boundTableZ;
     private float _r;
     private PhysicVector3 _direction;
+    private PocketDataPhysicVector3[] _pockets;
     private float _force;
     private BallState _ballState;
 
@@ -17,8 +22,13 @@ public class PhysicSystem
     {
         _physicData = physicData;
         _r = _physicData.BallRadius;
-        _limitX = _physicData.Width/2 - _r;
-        _limitZ = _physicData.Length/2 - _r;
+        _pockets = _physicData.Pockets;
+        _limitX = _physicData.Width/2;
+        _limitZ = _physicData.Length/2;
+        _offsetPocketCenter = _physicData.offsetPocketCenter;
+        _offsetPocketCorner = _physicData.offsetPocketCorner;
+        _boundTableX = _limitX - _offsetPocketCorner;
+        _boundTableZ = _limitZ - _offsetPocketCorner - _offsetPocketCenter;
     }
 
     public void InitialShoot(PhysicVector3 direction, float force, BallState ballState)
@@ -38,6 +48,7 @@ public class PhysicSystem
 
     public void UpdatePhysicForFrame(float dt)
     {
+        // Xu ly va cham bi voi bi
         ResolveBallToBallCollisions();
 
         for (int i=0; i<_ballState.TotalBalls; i++)
@@ -55,28 +66,88 @@ public class PhysicSystem
             // Cap nhat vi tri moi
             PhysicVector3 newPos = _ballState.Positions[i] + (velocity * dt);
 
-            if (newPos.X < -_limitX || newPos.X > _limitX)
+            // Xu ly va cham voi thanh bang
+            if ((0 <= newPos.Z - _offsetPocketCenter && newPos.Z - _offsetPocketCenter <= _boundTableZ) ||
+                (0 >= newPos.Z + _offsetPocketCenter && newPos.Z + _offsetPocketCenter >= -_boundTableZ))
             {
-                velocity.X = -velocity.X;                              
-                newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
+                if (newPos.X < -_limitX || newPos.X > _limitX)
+                {
+                    velocity.X = -velocity.X;
+                    newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
 
-                velocity.X *= _physicData.WallBounce; 
+                    velocity.X *= _physicData.WallBounce;
+                }
             }
 
-            if (newPos.Z < -_limitZ || newPos.Z > _limitZ)
+            if (-_boundTableX <= newPos.X && newPos.X <= _boundTableX)
             {
-                velocity.Z = -velocity.Z; 
-                newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
+                if (newPos.Z < -_limitZ || newPos.Z > _limitZ)
+                {
+                    velocity.Z = -velocity.Z;
+                    newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
 
-                velocity.Z *= _physicData.WallBounce;
+                    velocity.Z *= _physicData.WallBounce;
+                }
+            }
+
+            // Xu ly va cham voi mieng lo
+            float minDistance = _r;
+            float finalDistance = 0f;
+            PhysicVector3 finalQ = new PhysicVector3(0, 0, 0);       
+            for (int p = 0; p < _pockets.Length; p++)
+            {
+                if (PhysicVector3.Distance(newPos, _pockets[p].center) > 0.1f) continue;
+
+                PhysicVector3 upQ = FindProjectionPoint(newPos, _pockets[p].upA, _pockets[p].upB);
+                PhysicVector3 downQ = FindProjectionPoint(newPos, _pockets[p].downA, _pockets[p].downB);
+
+                float dUp = PhysicVector3.Distance(newPos, upQ);
+                float dDown = PhysicVector3.Distance(newPos, downQ);
+
+                if (dUp < _r || dDown < _r)
+                {
+                    if (dUp < dDown) { finalDistance = dUp; finalQ = upQ; }
+                    else { finalDistance = dDown; finalQ = downQ; }
+                    break; 
+                }
+            }
+
+            if (finalDistance > 0)
+            {
+                float overlap = _r - finalDistance;
+
+                PhysicVector3 collisionNormal = (newPos - finalQ).Normalize();
+
+                newPos = newPos + (collisionNormal * overlap);
+
+                float vDotN = velocity.Dot(collisionNormal);
+
+                if (vDotN < 0)
+                {
+                    PhysicVector3 vectorNormal = vDotN * collisionNormal;
+                    PhysicVector3 vectorTangent = velocity - vectorNormal;
+
+                    velocity = vectorTangent - (vectorNormal * _physicData.WallBounce);
+                }
             }
 
             _ballState.SetPosition(i, newPos);
 
             // Giam van toc moi frame do ma sat lan
-            velocity *= Mathf.Pow(_physicData.Mr, dt);
+            velocity *= (1f - _physicData.Mr * dt);
             _ballState.SetVelocity(i, velocity);
         }
+    }
+
+    public PhysicVector3 FindProjectionPoint(PhysicVector3 pBall0, PhysicVector3 a, PhysicVector3 b)
+    {
+        PhysicVector3 ap = pBall0 - a;
+        PhysicVector3 ab = b - a;
+
+        float t = ab.Dot(ap) / ab.SqrMagnitude();
+        t = Mathf.Clamp01(t);
+
+        return a + t * ab;
     }
 
     public void ResolveBallToBallCollisions()
@@ -138,4 +209,14 @@ public class PhysicSystem
         _ballState.SetVelocity(j, velJtangent + nextVelJnormal);
     }
 
+    public bool CheckBallsStatic()
+    {
+        for(int i = 0; i < _ballState.TotalBalls; i++)
+        {
+            if (!_ballState.IsActive[i]) continue;
+
+            if (_ballState.Velocities[i].SqrMagnitude() != 0) return false;
+        }
+        return true;
+    }
 }
