@@ -10,6 +10,7 @@ public struct PocketData
     public Vector3 upA, upB;
     public Vector3 downA, downB;
     public Vector3 center;
+    public float rPocket;
 }
 
 [CreateAssetMenu(fileName = "TableSize", menuName = "ScriptableObject/TableSize")]

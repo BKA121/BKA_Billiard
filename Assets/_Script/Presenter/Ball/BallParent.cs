@@ -37,6 +37,12 @@ public class BallParent : MonoBehaviour
 
         for (int i = 0; i < _ballViews.Length; i++)
         {
+            if (!_ballState.IsActive[i])
+            {
+                _ballViews[i].DeactivateBall();
+                continue;
+            }
+
             PhysicVector3 corePos = _ballState.Positions[i];
             bool active = _ballState.IsActive[i];
 

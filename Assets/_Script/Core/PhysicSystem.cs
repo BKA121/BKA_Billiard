@@ -66,27 +66,30 @@ public class PhysicSystem
             // Cap nhat vi tri moi
             PhysicVector3 newPos = _ballState.Positions[i] + (velocity * dt);
 
-            // Xu ly va cham voi thanh bang
-            if ((0 <= newPos.Z - _offsetPocketCenter && newPos.Z - _offsetPocketCenter <= _boundTableZ) ||
-                (0 >= newPos.Z + _offsetPocketCenter && newPos.Z + _offsetPocketCenter >= -_boundTableZ))
+            if (!_ballState.IsDropping[i])
             {
-                if (newPos.X < -_limitX || newPos.X > _limitX)
+                // Xu ly va cham voi thanh bang
+                if ((0 <= newPos.Z - _offsetPocketCenter && newPos.Z - _offsetPocketCenter <= _boundTableZ) ||
+                    (0 >= newPos.Z + _offsetPocketCenter && newPos.Z + _offsetPocketCenter >= -_boundTableZ))
                 {
-                    velocity.X = -velocity.X;
-                    newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
+                    if (newPos.X < -_limitX || newPos.X > _limitX)
+                    {
+                        velocity.X = -velocity.X;
+                        newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
 
-                    velocity.X *= _physicData.WallBounce;
+                        velocity.X *= _physicData.WallBounce;
+                    }
                 }
-            }
 
-            if (-_boundTableX <= newPos.X && newPos.X <= _boundTableX)
-            {
-                if (newPos.Z < -_limitZ || newPos.Z > _limitZ)
+                if (-_boundTableX <= newPos.X && newPos.X <= _boundTableX)
                 {
-                    velocity.Z = -velocity.Z;
-                    newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
+                    if (newPos.Z < -_limitZ || newPos.Z > _limitZ)
+                    {
+                        velocity.Z = -velocity.Z;
+                        newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
 
-                    velocity.Z *= _physicData.WallBounce;
+                        velocity.Z *= _physicData.WallBounce;
+                    }
                 }
             }
 
@@ -96,7 +99,28 @@ public class PhysicSystem
             PhysicVector3 finalQ = new PhysicVector3(0, 0, 0);       
             for (int p = 0; p < _pockets.Length; p++)
             {
-                if (PhysicVector3.Distance(newPos, _pockets[p].center) > 0.1f) continue;
+                float distanceToCenter = PhysicVector3.Distance(newPos, _pockets[p].center);
+
+                if (distanceToCenter > 0.21f) continue;
+
+                if(distanceToCenter < _pockets[p].rPocket || _ballState.IsDropping[i])
+                {
+                    PhysicVector3 dirToCenter = (_pockets[p].center - newPos).Normalize();
+                    float speed = velocity.Magnitude();
+
+                    velocity = velocity + dirToCenter * speed * 3f * dt;
+                    velocity = velocity * 0.98f;
+
+                    newPos.Y -= speed * dt;
+
+                    if (!_ballState.IsDropping[i]) _ballState.DropBall(i);
+
+                    if(newPos.Y < -0.14f)
+                    {
+                        _ballState.DeactivateBall(i);
+                    }
+                    break;
+                }
 
                 PhysicVector3 upQ = FindProjectionPoint(newPos, _pockets[p].upA, _pockets[p].upB);
                 PhysicVector3 downQ = FindProjectionPoint(newPos, _pockets[p].downA, _pockets[p].downB);
@@ -112,7 +136,7 @@ public class PhysicSystem
                 }
             }
 
-            if (finalDistance > 0)
+            if (finalDistance > 0 && !_ballState.IsDropping[i])
             {
                 float overlap = _r - finalDistance;
 
@@ -134,7 +158,7 @@ public class PhysicSystem
             _ballState.SetPosition(i, newPos);
 
             // Giam van toc moi frame do ma sat lan
-            velocity *= (1f - _physicData.Mr * dt);
+            if(!_ballState.IsDropping[i]) velocity *= (1f - _physicData.Mr * dt);
             _ballState.SetVelocity(i, velocity);
         }
     }
@@ -157,6 +181,7 @@ public class PhysicSystem
             for (int j = i + 1; j < _ballState.TotalBalls; j++)
             {
                 if (!_ballState.IsActive[i] || !_ballState.IsActive[j]) continue;
+                if (_ballState.IsDropping[i] || _ballState.IsDropping[j]) continue;
 
                 float distance = PhysicVector3.Distance(_ballState.Positions[i], _ballState.Positions[j]);
                 float minDistance = _r * 2.01f;

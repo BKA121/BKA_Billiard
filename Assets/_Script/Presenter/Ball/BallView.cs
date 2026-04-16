@@ -15,4 +15,9 @@ public class BallView : MonoBehaviour
             transform.localPosition = localPos;
         }
     }
+
+    public void DeactivateBall()
+    {
+        gameObject.SetActive(false);
+    }
 }

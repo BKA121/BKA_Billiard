@@ -30,8 +30,9 @@ public class GameInitializer : MonoBehaviour
                 upA = new PhysicVector3(p.upA.x, p.upA.y, p.upA.z),
                 upB = new PhysicVector3(p.upB.x, p.upB.y, p.upB.z),
                 downA = new PhysicVector3(p.downA.x, p.downA.y, p.downA.z),
-                downB = new PhysicVector3(p.downB.x, p.downB.y, p.downB.z), 
-                center = new PhysicVector3(p.center.x, p.center.y, p.center.z)
+                downB = new PhysicVector3(p.downB.x, p.downB.y, p.downB.z),
+                center = new PhysicVector3(p.center.x, p.center.y, p.center.z),
+                rPocket = p.rPocket
             };
         }
 

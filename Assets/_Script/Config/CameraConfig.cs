@@ -13,4 +13,8 @@ public class CameraConfig : ScriptableObject
     public float minHeight = 0.1f;
     public float maxHeight = 0.7f;
     public float heightSpeed = 2f;
+
+    // Do nhay camera
+    public float sensitivityFirstCam = 5f;
+    public float sensitivitySecondCam = 7f;
 }

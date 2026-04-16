@@ -16,4 +16,6 @@ MonoBehaviour:
   maxPitch: 11
   minHeight: 0.1
   maxHeight: 0.7
-  heightSpeed: 0.5
+  heightSpeed: 0.4
+  sensitivityFirstCam: 5
+  sensitivitySecondCam: 10

@@ -6,7 +6,6 @@ using UnityEngine;
 public class CueView : MonoBehaviour
 {
     private CueInteraction _cueInteraction = new CueInteraction();
-    [SerializeField] private float _sensitivity = 0.2f;
     private ICueState _currentState;
     private BallState _ballState; 
     private bool _isInitialized = false;
@@ -26,7 +25,6 @@ public class CueView : MonoBehaviour
     public Transform overviewAnchor;
     public Transform cameraOffset;
     public Camera secondCamera;
-    public float Sensitivity => _sensitivity;
 
     public void Initialize(BallState ballState)
     {

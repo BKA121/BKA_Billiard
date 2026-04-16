@@ -6,7 +6,8 @@ public struct PocketDataPhysicVector3
 {
     public PhysicVector3 upA, upB;
     public PhysicVector3 downA, downB;
-    public PhysicVector3 center;
+    public PhysicVector3 center; // tam lo
+    public float rPocket; // ban kinh lo
 }
 
 public struct PhysicVector3

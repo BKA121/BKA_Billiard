@@ -28,7 +28,7 @@ public class CueOverviewState : ICueState
         float mouseX = _view.playerInputController.GetHorizontalAxis();
         float mouseY = _view.playerInputController.GetVerticalAxis();
 
-        _interaction.CaculateAngle(mouseX, _view.Sensitivity);
+        _interaction.CaculateAngle(mouseX, _view.cameraConfig.sensitivitySecondCam);
         _interaction.CaculateHeightSecondCam(mouseY, _view.cameraConfig.minHeight, _view.cameraConfig.maxHeight, _view.cameraConfig.heightSpeed);
     }
 

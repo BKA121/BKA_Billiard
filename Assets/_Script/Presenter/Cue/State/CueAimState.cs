@@ -24,8 +24,8 @@ public class CueAimState : ICueState
         float mouseX = _view.playerInputController.GetHorizontalAxis();
         float mouseY = _view.playerInputController.GetVerticalAxis();
 
-        _interaction.CaculateAngle(mouseX, _view.Sensitivity);
-        _interaction.CaculateCameraPitch(mouseY, _view.cameraConfig.minPitch, _view.cameraConfig.maxPitch, _view.Sensitivity);
+        _interaction.CaculateAngle(mouseX, _view.cameraConfig.sensitivityFirstCam);
+        _interaction.CaculateCameraPitch(mouseY, _view.cameraConfig.minPitch, _view.cameraConfig.maxPitch, _view.cameraConfig.sensitivityFirstCam);
     }
 
     public void UpdateView()
