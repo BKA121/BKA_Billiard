@@ -29,14 +29,17 @@ public class BallParent : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        if (!gameController.coreManager.isCaculateShoot) return;
+        if (gameController.matchManager.CurrentStateEnum != MatchStateEnum.Simulating && 
+            !gameController.matchManager._awaitingState.HasBallInHand) return;
 
         if (_ballState == null || _ballViews == null) return;
 
         for (int i = 0; i < _ballViews.Length; i++)
         {
+            if (gameController.matchManager._awaitingState.HasBallInHand && i != 0) continue;
+
             if (!_ballState.IsActive[i])
             {
                 _ballViews[i].DeactivateBall();

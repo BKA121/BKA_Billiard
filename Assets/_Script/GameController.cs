@@ -4,24 +4,31 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public CoreManager coreManager;
-    private float _dt;
-
-    public void Initialized(CoreManager coreManager)
-    {
-        this.coreManager = coreManager;
-    }
+    public MatchManager matchManager;
+    public float dt, fixedt;
 
     private void Start()
     {
-        _dt = Time.fixedDeltaTime;
+        dt = Time.deltaTime;
+        fixedt = Time.fixedDeltaTime;
+    }
+
+    public void Initialized(MatchManager matchManager)
+    {
+        this.matchManager = matchManager;
     }
 
     void FixedUpdate()
     {
-        if (coreManager.isCaculateShoot)
-        {
-            coreManager.CaculateShoot(_dt);
-        }
+        if (matchManager == null) return;
+
+        matchManager.FixedUpdate(fixedt);
+    }
+
+    void Update()
+    {
+        if (matchManager == null) return;
+
+        matchManager.Update(dt);
     }
 }

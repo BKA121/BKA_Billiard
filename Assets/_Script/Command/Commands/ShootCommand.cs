@@ -4,19 +4,19 @@ using UnityEngine;
 
 public class ShootCommand : ICommand
 {
-    private readonly CoreManager _coreManager;
+    private readonly MatchManager _matchManager;
     private readonly PhysicVector3 _direction;
     private readonly float _force;
 
-    public ShootCommand(CoreManager coreManager, PhysicVector3 direction, float force)
+    public ShootCommand(MatchManager matchManager, PhysicVector3 direction, float force)
     {
-        _coreManager = coreManager;
+        _matchManager = matchManager;
         _direction = direction;
         _force = force;
     }
 
     public void Execute()
     {
-        _coreManager.PrepareCaculateShoot(_direction, _force);
+        _matchManager.ExecuteShoot(_direction, _force);
     }
 }

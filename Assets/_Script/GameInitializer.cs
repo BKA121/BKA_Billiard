@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameInitializer : MonoBehaviour
 {
-    private CoreManager _coreManager;
+    private MatchManager _matchManager;
     private GameState _gameState;
 
     public TableSize tableConfig;
@@ -13,6 +13,8 @@ public class GameInitializer : MonoBehaviour
     public BallParent ballParent;
     public CommandDispatcher commandDispatcher;
     public GameController gameController;
+    public MatchPresenter matchPresenter;
+    public BallInteraction ballInteraction;
 
     // Khoi tao lop du lieu vat ly thuan C# cho core su dung
     private PhysicData CreatePhysicData()
@@ -52,10 +54,15 @@ public class GameInitializer : MonoBehaviour
 
         PhysicData pureData = CreatePhysicData();
         _gameState = new GameState(pureData);
-        _coreManager = new CoreManager(_gameState);
+        MatchConfig localPvP = MatchConfig.CreatePvPMatch(102, 1, "Player 1", PlayerType.Local, 2, "Player 2", PlayerType.Local, 40f);
+        _matchManager = new MatchManager(_gameState, localPvP);   // khoi tao them match config
+        matchPresenter.Initialize(_matchManager);
+        ballInteraction.Initialized(_matchManager);
+        _matchManager.StartMatch();
         ballParent.Initialize(_gameState.ballState);
         cueView.Initialize(_gameState.ballState);
-        commandDispatcher.Initialize(_coreManager);
-        gameController.Initialized(_coreManager);
+        commandDispatcher.Initialize(_matchManager);
+        gameController.Initialized(_matchManager);
+
     }
 }

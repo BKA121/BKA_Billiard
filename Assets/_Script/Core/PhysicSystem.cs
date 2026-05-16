@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PhysicSystem 
@@ -17,9 +18,13 @@ public class PhysicSystem
     private PocketDataPhysicVector3[] _pockets;
     private float _force;
     private BallState _ballState;
+    private ShotResult _shotResult;
 
-    public PhysicSystem(PhysicData physicData)
+    public PhysicSystem(PhysicData physicData, BallState ballState, ShotResult shotResult)
     {
+        _ballState = ballState;
+        _shotResult = shotResult;
+
         _physicData = physicData;
         _r = _physicData.BallRadius;
         _pockets = _physicData.Pockets;
@@ -31,11 +36,10 @@ public class PhysicSystem
         _boundTableZ = _limitZ - _offsetPocketCorner - _offsetPocketCenter;
     }
 
-    public void InitialShoot(PhysicVector3 direction, float force, BallState ballState)
+    public void InitialShoot(PhysicVector3 direction, float force)
     {
         _direction = direction;
         _force = force;
-        _ballState = ballState;
         
         PhysicVector3 horizontalDir = new PhysicVector3(direction.X, 0, direction.Z);
 
@@ -43,7 +47,7 @@ public class PhysicSystem
 
         PhysicVector3 initialVelocity = horizontalDir * force;
 
-        ballState.SetVelocity(0, initialVelocity);
+        _ballState.SetVelocity(0, initialVelocity);
     }
 
     public void UpdatePhysicForFrame(float dt)
@@ -57,7 +61,7 @@ public class PhysicSystem
 
             PhysicVector3 velocity = _ballState.Velocities[i];
 
-            if (velocity.SqrMagnitude() < 0.0001f)
+            if (velocity.SqrMagnitude() < 0.001f)
             {
                 _ballState.SetVelocity(i, new PhysicVector3(0, 0, 0));
                 continue;
@@ -78,6 +82,10 @@ public class PhysicSystem
                         newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
 
                         velocity.X *= _physicData.WallBounce;
+                        if (_shotResult.firstBallHitID != -1 && !_shotResult.ballHitCushionAfterShot.Contains(i))
+                        {
+                            _shotResult.ballHitCushionAfterShot.Add(i);
+                        }
                     }
                 }
 
@@ -89,6 +97,10 @@ public class PhysicSystem
                         newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
 
                         velocity.Z *= _physicData.WallBounce;
+                        if (_shotResult.firstBallHitID != -1 && !_shotResult.ballHitCushionAfterShot.Contains(i))
+                        {
+                            _shotResult.ballHitCushionAfterShot.Add(i);
+                        }
                     }
                 }
             }
@@ -103,25 +115,36 @@ public class PhysicSystem
 
                 if (distanceToCenter > 0.21f) continue;
 
-                if(distanceToCenter < _pockets[p].rPocket || _ballState.IsDropping[i])
+                // Xu ly roi xuong lo
+                if (distanceToCenter < _pockets[p].rPocket || _ballState.IsDropping[i])
                 {
+                    if (!_shotResult.pocketedBallIDs.Contains(i)) _shotResult.pocketedBallIDs.Add(i);
+
+                    if (i == 0) _shotResult.isBall0Pocketed = true;
+                    if (i == 8) _shotResult.isBall8Pocketed = true;
+
                     PhysicVector3 dirToCenter = (_pockets[p].center - newPos).Normalize();
                     float speed = velocity.Magnitude();
 
-                    velocity = velocity + dirToCenter * speed * 3f * dt;
+                    velocity = velocity + dirToCenter * (speed + 0.5f) * 3f * dt;
                     velocity = velocity * 0.98f;
 
-                    newPos.Y -= speed * dt;
+                    float gravityFall = 0.1f * dt;
+                    float velocityFall = speed * dt;
+
+                    newPos.Y -= (velocityFall + gravityFall);
 
                     if (!_ballState.IsDropping[i]) _ballState.DropBall(i);
 
-                    if(newPos.Y < -0.14f)
+                    if (newPos.Y < -0.14f)
                     {
                         _ballState.DeactivateBall(i);
+                        velocity.X = 0; velocity.Y = 0; velocity.Z = 0;
                     }
                     break;
                 }
 
+                // Xy ly va cham mom lo
                 PhysicVector3 upQ = FindProjectionPoint(newPos, _pockets[p].upA, _pockets[p].upB);
                 PhysicVector3 downQ = FindProjectionPoint(newPos, _pockets[p].downA, _pockets[p].downB);
 
@@ -136,8 +159,13 @@ public class PhysicSystem
                 }
             }
 
+            // Xy ly va cham mom lo
             if (finalDistance > 0 && !_ballState.IsDropping[i])
             {
+                if (_shotResult.firstBallHitID != -1 && !_shotResult.ballHitCushionAfterShot.Contains(i))
+                {
+                    _shotResult.ballHitCushionAfterShot.Add(i);
+                }
                 float overlap = _r - finalDistance;
 
                 PhysicVector3 collisionNormal = (newPos - finalQ).Normalize();
@@ -188,6 +216,7 @@ public class PhysicSystem
 
                 if (distance < minDistance)
                 {
+                    if (i == 0 && _shotResult.firstBallHitID == -1) _shotResult.firstBallHitID = j;
                     HandleBallCollision(i, j, distance, minDistance);
                 }
             }

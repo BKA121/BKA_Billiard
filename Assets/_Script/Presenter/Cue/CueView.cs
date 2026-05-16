@@ -6,7 +6,6 @@ using UnityEngine;
 public class CueView : MonoBehaviour
 {
     private CueInteraction _cueInteraction = new CueInteraction();
-    private ICueState _currentState;
     private BallState _ballState; 
     private bool _isInitialized = false;
     private PhysicVector3 ball0Pos;
@@ -15,6 +14,7 @@ public class CueView : MonoBehaviour
     public CuePowerState PowerState { get; private set; }
     public CueOverviewState OverViewState { get; private set; }
 
+    public ICueState currentState;
     public Transform cueModel;
     public Vector3 ball0Position;
     public PlayerInputController playerInputController;
@@ -25,6 +25,7 @@ public class CueView : MonoBehaviour
     public Transform overviewAnchor;
     public Transform cameraOffset;
     public Camera secondCamera;
+    public BallInteraction ballInteraction;
 
     public void Initialize(BallState ballState)
     {
@@ -39,19 +40,21 @@ public class CueView : MonoBehaviour
 
     private void Update()
     {
-        if (!_isInitialized || _currentState == null) return;
+        if (!_isInitialized || currentState == null) return;
 
         UpdateCuePosition(); // Luon cap nhat vi tri bi trang cho cue
 
-        _currentState.HandleInput();
-        _currentState.UpdateView();
+        if (ballInteraction.isMModeActive) return;
+
+        currentState.HandleInput();
+        currentState.UpdateView();
     }
 
     public void ChangeState(ICueState newState)
     {
-        _currentState?.Exit();
-        _currentState = newState;
-        _currentState?.Enter();
+        currentState?.Exit();
+        currentState = newState;
+        currentState?.Enter();
     }
 
     private void UpdateCuePosition()

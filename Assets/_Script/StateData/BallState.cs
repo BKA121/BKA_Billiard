@@ -29,4 +29,5 @@ public class BallState
     public void SetVelocity(int index, PhysicVector3 vel) => Velocities[index] = vel;
     public void DeactivateBall(int index) => IsActive[index] = false;
     public void DropBall(int index) => IsDropping[index] = true;
+    public void UndoDropBall(int index) => IsDropping[index] = false;
 }

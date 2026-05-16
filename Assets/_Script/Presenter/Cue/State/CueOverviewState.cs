@@ -38,7 +38,7 @@ public class CueOverviewState : ICueState
         _view.overviewAnchor.rotation = Quaternion.Euler(0, _interaction.CurrentAngle, 0);
         _view.cameraOffset.localPosition = new Vector3(0, _interaction.HeightSecondCam, -1.7f);
 
-        if (_view.playerInputController.IsSwitchViewPressed())
+        if (_view.playerInputController.IsSwitchViewPressed() && MatchManager.Instance.CurrentStateEnum == MatchStateEnum.Awaiting)
         {
             _view.ChangeState(_view.AimState);
         }

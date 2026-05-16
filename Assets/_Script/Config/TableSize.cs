@@ -22,7 +22,7 @@ public class TableSize : ScriptableObject
     public float Mr = 0.99f;               // Sau moi frame thi giam di 0.01 do ma sat lan
     public float WallBounce = 0.8f;        // He so nay bang cua ban
 
-    // Vi tri duong line pha bi, co do dai z: [-width/2 - width/2]
+    // Vi tri duong line pha bi, co do dai z: [-width/2; width/2]
     public Vector3 HeadSpot => new Vector3(0, 0, -0.6521f);
     // Vi tri duong line xep bi
     public Vector3 FootSpot => new Vector3(0, 0, 0.6521f);

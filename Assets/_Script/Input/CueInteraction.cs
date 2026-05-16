@@ -12,7 +12,7 @@ public class CueInteraction
     public float CurrentPull { get; private set; } // Do doi khi keo gay
     public float CurrentStrikeSpeed { get; private set; } // Van toc danh bi trong 1 frame
 
-    public float HeightSecondCam { get; private set; } // Do cao second cam
+    public float HeightSecondCam = 0.7f; // Do cao second cam
 
     // Ham tinh toan xoay gay de ngam ban
     public void CaculateAngle(float mouseInputX, float sensitivity)

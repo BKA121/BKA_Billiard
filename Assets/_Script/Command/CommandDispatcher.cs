@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CommandDispatcher : MonoBehaviour
 {
-    public CoreManager coreManager;
+    public MatchManager coreManager;
     public static CommandDispatcher Instance { get; private set; }
 
     private void Awake()
@@ -12,7 +12,7 @@ public class CommandDispatcher : MonoBehaviour
         Instance = this;
     }
 
-    public void Initialize(CoreManager coreManager)
+    public void Initialize(MatchManager coreManager)
     {
         this.coreManager = coreManager;
     }

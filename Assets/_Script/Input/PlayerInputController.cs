@@ -29,4 +29,10 @@ public class PlayerInputController : MonoBehaviour
     {
         return Input.GetKeyDown(KeyCode.V);
     }
+
+    // Ham kiem tra yeu cau dat bi
+    public bool IsBallInHandAction()
+    {
+        return Input.GetKeyDown(KeyCode.M);
+    }
 }
