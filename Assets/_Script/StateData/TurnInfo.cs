@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class TurnInfo 
 {
-    public int activePlayerId;
-    public string namePlayer;
+    public int currentPlayer;
     public bool hasBallInHand;
     public float timeLimit;
 
     public bool isBreakShot;
-    public bool isGameOver;
-    public int winnerId = -1; 
+    public bool isDeviceBallGroup;
+    public bool isGameOver; 
 
     public FoulType lastFoulType; 
     public string notifyMessage;   

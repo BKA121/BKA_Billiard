@@ -11,6 +11,9 @@ public class InitializingState : IMatchState
     private PhysicData _physicData;
     private BallState _ballState;
 
+
+    public bool isReplay = false;
+
     public InitializingState(MatchManager matchManager)
     {
         _matchManager = matchManager;
@@ -20,10 +23,21 @@ public class InitializingState : IMatchState
 
     public void Enter()
     {
-        Setup8BallPositionForNewMatch();
+        if (isReplay)
+        {
+            ResetMatch();
+            _matchManager.gameState.races += 1;
+        }
+        else
+        {
+            InitializePlayer(_matchManager.matchConfig);
+            InitializeTurnInfo(_matchManager.gameState.currentTurnInfo, _matchManager.matchConfig);
+        }
 
-        InitializePlayer(_matchManager.matchConfig);
-        InitializeTurnInfo(_matchManager.gameState.currentTurnInfo, _matchManager.matchConfig);
+        Setup8BallPositionForNewMatch();
+        _matchManager.OnShowScoreBar?.Invoke(_matchManager.gameState.listPlayer);
+
+        if (isReplay) _matchManager.OnReplayMatch?.Invoke();
 
         _matchManager.ChangeState(_matchManager._notifyingState, MatchStateEnum.Notifying);
     }
@@ -40,13 +54,11 @@ public class InitializingState : IMatchState
 
     public void Exit()
     {
-
+        if (isReplay) isReplay = false;
     }
 
     private void InitializePlayer(MatchConfig matchConfig)
     {
-        _matchManager.gameState.listPlayer = new List<PlayerInfo>();
-
         foreach (var reg in matchConfig.listPlayer)
         {
             _matchManager.gameState.listPlayer.Add(new PlayerInfo
@@ -55,6 +67,7 @@ public class InitializingState : IMatchState
                 name = reg.name,
                 type = reg.type,
                 score = 0,
+                isWinner = false,
                 foulCount = 0,
                 remainingBalls = 7,
                 targetGroup = BallGroupType.None
@@ -64,15 +77,43 @@ public class InitializingState : IMatchState
     }
     private void InitializeTurnInfo(TurnInfo currentTurnInfo, MatchConfig matchConfig)
     {
-        currentTurnInfo.activePlayerId = _matchManager.gameState.GetCurrentPlayer().Id;
-        currentTurnInfo.namePlayer = _matchManager.gameState.GetCurrentPlayer().name;
+        currentTurnInfo.currentPlayer = _matchManager.gameState.currentPlayerIndex;
         currentTurnInfo.isBreakShot = true;
         currentTurnInfo.hasBallInHand = false;
         currentTurnInfo.timeLimit = matchConfig.timeLimit;
 
         currentTurnInfo.isGameOver = false;
+        currentTurnInfo.isDeviceBallGroup = false;
         currentTurnInfo.lastFoulType = FoulType.None;
         currentTurnInfo.notifyMessage = "";
+    }
+
+    private void ResetMatch()
+    {
+        ReplayInitializePlayer();
+        ReplayInitializeTurnInfo();
+
+        _matchManager.gameState.ballState.ResetBallState();
+    }
+    private void ReplayInitializePlayer()
+    {
+        foreach (var player in _matchManager.gameState.listPlayer)
+        {
+            player.isWinner = false;
+            player.remainingBalls = 7;
+            player.targetGroup = BallGroupType.None;
+        }
+    }
+    private void ReplayInitializeTurnInfo()
+    {
+        var turnInfo = _matchManager.gameState.currentTurnInfo;
+
+        turnInfo.hasBallInHand = false;
+        turnInfo.isBreakShot = true;
+        turnInfo.isGameOver = false;
+        turnInfo.isDeviceBallGroup = false;
+        turnInfo.lastFoulType = FoulType.None;
+        turnInfo.notifyMessage = "";
     }
 
     public void Setup8BallPositionForNewMatch()

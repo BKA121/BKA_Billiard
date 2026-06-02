@@ -118,7 +118,11 @@ public class PhysicSystem
                 // Xu ly roi xuong lo
                 if (distanceToCenter < _pockets[p].rPocket || _ballState.IsDropping[i])
                 {
-                    if (!_shotResult.pocketedBallIDs.Contains(i)) _shotResult.pocketedBallIDs.Add(i);
+                    if (!_shotResult.pocketedBallIDs.Contains(i))
+                    {
+                        _shotResult.pocketedBallIDs.Add(i);
+                        MatchManager.Instance.OnChangeColorBallPocketed?.Invoke(i);
+                    }
 
                     if (i == 0) _shotResult.isBall0Pocketed = true;
                     if (i == 8) _shotResult.isBall8Pocketed = true;

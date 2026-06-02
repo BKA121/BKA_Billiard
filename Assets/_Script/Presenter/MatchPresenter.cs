@@ -7,7 +7,11 @@ using UnityEngine;
 public class MatchPresenter : MonoBehaviour
 {
     public MatchManager matchManager;
+    public TMP_Text textFoulDescription;
+
     [SerializeField] private TextMeshProUGUI timerText;
+    private Queue<string> _msgQueue = new Queue<string>();
+
 
     private int _lastPlayerId = -1;
 
@@ -15,7 +19,7 @@ public class MatchPresenter : MonoBehaviour
     {
         this.matchManager = matchManager;
 
-        matchManager.OnNotifyUI += ShowNotifyMatch;
+        matchManager.OnNotifyInMatch += ShowNotifyMatch;
         matchManager.OnTimerUpdated += UpdateTimerText;
     }
 
@@ -23,37 +27,62 @@ public class MatchPresenter : MonoBehaviour
     {
         if (timerText != null)
         {
-            timerText.text = seconds.ToString();
+            timerText.text = seconds.ToString(); 
         }
     }
 
     private void ShowNotifyMatch(TurnInfo info)
     {
-        if(_lastPlayerId == -1)
+        if (_lastPlayerId == -1)
         {
-            _lastPlayerId = info.activePlayerId;
+            _lastPlayerId = info.currentPlayer;
         }
 
-        if (info.isBreakShot)
+        if (info.lastFoulType != FoulType.None)
         {
-            Debug.Log(info.namePlayer.ToUpper() + " PHÁ BI!");
-            return;
-        }
-
-        if(info.lastFoulType != FoulType.None)
-        {
-            Debug.Log(info.notifyMessage);
-        }
-        
-        if(_lastPlayerId != info.activePlayerId)
-        {
-            Debug.Log("LƯỢT CỦA " + info.namePlayer.ToUpper() + "!");
-            _lastPlayerId = info.activePlayerId;
+            _msgQueue.Enqueue(info.notifyMessage);
         }
 
         if (info.isGameOver)
         {
-            Debug.Log(info.namePlayer.ToUpper() + " THẮNG!");
+            StartCoroutine(ProcessNotificationQueue());
+            return;
         }
+
+        if (info.isBreakShot)
+        {
+            _msgQueue.Enqueue(matchManager.gameState.GetCurrentPlayer().name + " is breaking!");
+            StartCoroutine(ProcessNotificationQueue());
+            return;
+        }
+
+        if (info.isDeviceBallGroup)
+        {
+            _msgQueue.Enqueue(info.notifyMessage);
+            info.isDeviceBallGroup = false;
+            StartCoroutine(ProcessNotificationQueue());
+            return;
+        }
+        
+        if(_lastPlayerId != info.currentPlayer)
+        {
+            _msgQueue.Enqueue(matchManager.gameState.GetCurrentPlayer().name + "'s turn!");
+            _lastPlayerId = info.currentPlayer;
+        }
+        StartCoroutine(ProcessNotificationQueue());
+    }
+
+    private IEnumerator ProcessNotificationQueue()
+    {
+        textFoulDescription.gameObject.SetActive(true);
+
+        while(_msgQueue.Count > 0)
+        {
+            textFoulDescription.text = _msgQueue.Dequeue();
+
+            yield return new WaitForSeconds(4f);
+        }
+
+        textFoulDescription.gameObject.SetActive(false);
     }
 }

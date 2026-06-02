@@ -25,6 +25,16 @@ public class BallState
         }
     }
 
+    public void ResetBallState()
+    {
+        for (int i = 0; i < TotalBalls; i++)
+        {
+            IsActive[i] = true;
+            IsDropping[i] = false;
+            Velocities[i].X = 0; Velocities[i].Y = 0; Velocities[i].Z = 0;
+        }
+    }
+
     public void SetPosition(int index, PhysicVector3 pos) => Positions[index] = pos;
     public void SetVelocity(int index, PhysicVector3 vel) => Velocities[index] = vel;
     public void DeactivateBall(int index) => IsActive[index] = false;

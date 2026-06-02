@@ -11,6 +11,7 @@ public class PlayerInfo
     public string name;
     public PlayerType type;
     public int score;
+    public bool isWinner;
     public int remainingBalls;
     public BallGroupType targetGroup;
     public int foulCount;

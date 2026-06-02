@@ -21,12 +21,14 @@ public class GameState
     // Cac su kien sau cu danh
     public ShotResult shotResult;
 
-    public FoulType hasFoulInCurrentTurn = FoulType.None;
+    // Thong tin so tran dau
+    public int races = 1;
 
     public GameState(PhysicData physicData)
     {
         this.physicData = physicData;
         ballState = new BallState(16);
+        listPlayer = new List<PlayerInfo>();
         currentTurnInfo = new TurnInfo();
         shotResult = new ShotResult();
     }

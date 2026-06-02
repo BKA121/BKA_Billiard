@@ -54,15 +54,30 @@ public class GameInitializer : MonoBehaviour
 
         PhysicData pureData = CreatePhysicData();
         _gameState = new GameState(pureData);
-        MatchConfig localPvP = MatchConfig.CreatePvPMatch(102, 1, "Player 1", PlayerType.Local, 2, "Player 2", PlayerType.Local, 40f);
-        _matchManager = new MatchManager(_gameState, localPvP);   // khoi tao them match config
+
+        MatchConfig currentMatchConfig;
+
+        if (GameManager.Instance != null && GameManager.Instance.MatchConfigToLoad != null)
+        {
+            currentMatchConfig = GameManager.Instance.MatchConfigToLoad;
+        }
+        else
+        {
+            currentMatchConfig = MatchConfig.CreatePvPMatch(102, 1, "Test 1", PlayerType.Local, 2, "Test 2", PlayerType.Local, 40f);
+        }
+
+        _matchManager = new MatchManager(_gameState, currentMatchConfig);
+
         matchPresenter.Initialize(_matchManager);
         ballInteraction.Initialized(_matchManager);
+    }
+
+    private void Start()
+    {
         _matchManager.StartMatch();
         ballParent.Initialize(_gameState.ballState);
         cueView.Initialize(_gameState.ballState);
         commandDispatcher.Initialize(_matchManager);
         gameController.Initialized(_matchManager);
-
     }
 }

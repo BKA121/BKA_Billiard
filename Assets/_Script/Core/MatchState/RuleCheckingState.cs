@@ -12,7 +12,8 @@ public enum FoulType
     NoCushionContact,   // Khong co bi cham bang
     InvalidBreak,       // Pha khong hop le
     TimeOut,            // Het gio
-    EightBallFoul       // Loi roi 8
+    EightBallFoul,      // Loi roi 8
+    Quit                // Bo cuoc
 }
 
 public class RuleCheckingState : IMatchState
@@ -53,34 +54,52 @@ public class RuleCheckingState : IMatchState
 
     public void ProcessShotLogic()
     {
-        var result = _matchManager.gameState.shotResult;
-        var turnInfo = _matchManager.gameState.currentTurnInfo;
-
         PlayerInfo currentPlayer = _matchManager.gameState.GetCurrentPlayer();
         PlayerInfo otherPlayer = _matchManager.gameState.GetOtherPlayer();
+
+        var turnInfo = _matchManager.gameState.currentTurnInfo;
+
+        if(turnInfo.lastFoulType == FoulType.Quit)
+        {
+            turnInfo.notifyMessage = currentPlayer.name + " left the match.";
+            _matchManager.gameState.currentPlayerIndex = (_matchManager.gameState.currentPlayerIndex == 0) ? 1 : 0;
+            PlayerInfo nextPlayer = _matchManager.gameState.GetCurrentPlayer();
+
+            turnInfo.currentPlayer = _matchManager.gameState.currentPlayerIndex;
+            turnInfo.isGameOver = true;
+            nextPlayer.score += 1;
+            nextPlayer.isWinner = true;
+         
+            return;
+        }
+
+        var result = _matchManager.gameState.shotResult;
 
         // Kiem tra loi
         CheckFoul(result, turnInfo, currentPlayer, otherPlayer);
 
         // Quyet dinh luot danh moi
         turnInfo.isBreakShot = false;
+        turnInfo.hasBallInHand = false;
         turnInfo.lastFoulType = _hasFoul;
-        turnInfo.notifyMessage = GetFoulMessage(_hasFoul);
-        turnInfo.timeLimit = _matchManager.matchConfig.timeLimit;
+        if(_hasFoul != FoulType.None) turnInfo.notifyMessage = GetFoulMessage(_hasFoul);
 
         if (_hasFoul == FoulType.EightBallFoul)
         {
             _matchManager.gameState.currentPlayerIndex = (_matchManager.gameState.currentPlayerIndex == 0) ? 1 : 0;
             PlayerInfo nextPlayer = _matchManager.gameState.GetCurrentPlayer();
 
+            turnInfo.currentPlayer = _matchManager.gameState.currentPlayerIndex;
             turnInfo.isGameOver = true;
-            turnInfo.winnerId = nextPlayer.Id;
+            nextPlayer.isWinner = true;
+            nextPlayer.score += 1;
             return;
         }
         else if (_win)
         {
             turnInfo.isGameOver = true;
-            turnInfo.winnerId = currentPlayer.Id;
+            currentPlayer.isWinner = true;
+            currentPlayer.score += 1;
             return;
         }
         else if (!_hasScored) // doi luot
@@ -88,20 +107,12 @@ public class RuleCheckingState : IMatchState
             _matchManager.gameState.currentPlayerIndex = (_matchManager.gameState.currentPlayerIndex == 0) ? 1 : 0;
             PlayerInfo nextPlayer = _matchManager.gameState.GetCurrentPlayer();
 
-            turnInfo.activePlayerId = nextPlayer.Id;
-            turnInfo.namePlayer = nextPlayer.name;
-            turnInfo.hasBallInHand = false;
+            turnInfo.currentPlayer = _matchManager.gameState.currentPlayerIndex;
 
             if (_hasFoul != FoulType.None && _hasFoul != FoulType.EightBallFoul)
             {
                 turnInfo.hasBallInHand = true;
             }
-        }
-        else if (_hasScored)
-        {
-            turnInfo.activePlayerId = currentPlayer.Id;
-            turnInfo.namePlayer = currentPlayer.name;
-            turnInfo.hasBallInHand = false;
         }
 
         float rBall = _matchManager.gameState.physicData.BallRadius;
@@ -144,6 +155,7 @@ public class RuleCheckingState : IMatchState
 
                 safetyCounter++;
             }
+            _matchManager.OnChangeColorBallPocketed?.Invoke(8);
         }
 
         // Dat lai bi trang
@@ -234,15 +246,22 @@ public class RuleCheckingState : IMatchState
 
         if (result.pocketedBallIDs.Count == 0) // truong hop khong roi bi
         {
-            if ((currentPlayer.targetGroup == BallGroupType.Solid && result.firstBallHitID >= 8) ||
-                (currentPlayer.targetGroup == BallGroupType.Stripe && result.firstBallHitID <= 8) ||
-                (currentPlayer.targetGroup == BallGroupType.None && result.firstBallHitID == 8) )
+            if ((currentPlayer.targetGroup == BallGroupType.Solid && result.firstBallHitID > 8) ||
+                (currentPlayer.targetGroup == BallGroupType.Stripe && result.firstBallHitID < 8) ||
+                (currentPlayer.targetGroup == BallGroupType.None && result.firstBallHitID == 8) ||
+                (!currentPlayer.canPlayEightBall && result.firstBallHitID == 8))
             {
                 _hasFoul = FoulType.WrongBallHit;
             }
         }
         else // truong hop co roi bi
         {
+            if(currentPlayer.targetGroup != BallGroupType.None)
+            {
+                currentPlayer.remainingBalls = _matchManager.gameState.CountBallsInGroup(currentPlayer.targetGroup);
+                otherPlayer.remainingBalls = _matchManager.gameState.CountBallsInGroup(otherPlayer.targetGroup);
+            }
+
             if(result.isBall0Pocketed && !result.isBall8Pocketed)
             {
                 _hasFoul = FoulType.Ball0Pocketed;
@@ -284,8 +303,17 @@ public class RuleCheckingState : IMatchState
                         {
                             if (!turnInfo.isBreakShot)
                             {
-                                if (result.pocketedBallIDs[0] < 8) currentPlayer.targetGroup = BallGroupType.Solid;
-                                else currentPlayer.targetGroup = BallGroupType.Stripe;
+                                if (result.pocketedBallIDs[0] < 8)
+                                {
+                                    currentPlayer.targetGroup = BallGroupType.Solid;
+                                    turnInfo.notifyMessage = currentPlayer.name + " is assigned solids.";
+                                }
+                                else
+                                {
+                                    currentPlayer.targetGroup = BallGroupType.Stripe;
+                                    turnInfo.notifyMessage = currentPlayer.name + " is assigned stripes.";
+                                }
+                                turnInfo.isDeviceBallGroup = true;
                                 otherPlayer.targetGroup = (currentPlayer.targetGroup == BallGroupType.Solid)
                                                             ? BallGroupType.Stripe
                                                             : BallGroupType.Solid;
@@ -333,13 +361,13 @@ public class RuleCheckingState : IMatchState
     {
         switch (foul)
         {
-            case FoulType.TimeOut: return "HẾT GIỜ!";
-            case FoulType.EightBallFoul: return "LỖI RƠI 8!";
-            case FoulType.Ball0Pocketed: return "LỖI: RƠI BI CÁI!";
-            case FoulType.NoBallCollision: return "LỖI: KHÔNG CHẠM BI!";
-            case FoulType.NoCushionContact: return "LỖI: KHÔNG CÓ BI CHẠM BĂNG!";
-            case FoulType.WrongBallHit: return "LỖI: CHẠM SAI NHÓM BI!";
-            case FoulType.InvalidBreak: return "PHÁ BI KHÔNG HỢP LỆ!";
+            case FoulType.TimeOut: return "Time out!";
+            case FoulType.EightBallFoul: return "8 ball foul!";
+            case FoulType.Ball0Pocketed: return "Cue ball scratch!";
+            case FoulType.NoBallCollision: return "No ball hit!";
+            case FoulType.NoCushionContact: return "No ball hit a rail after contact!";
+            case FoulType.WrongBallHit: return "Wrong ball first!";
+            case FoulType.InvalidBreak: return "Invalid break shot!";
             default: return "";
         }
     }

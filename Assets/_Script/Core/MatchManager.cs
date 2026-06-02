@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 public enum MatchStateEnum { Initializing, Awaiting, Simulating, RuleChecking, Notifying, GameOver }
 
@@ -54,6 +55,12 @@ public class MatchManager
         ChangeState(_simulatingState, MatchStateEnum.Simulating);
     }
 
+    public void ExecutePlayerQuit()
+    {
+        gameState.currentTurnInfo.lastFoulType = FoulType.Quit;
+        ChangeState(_ruleCheckingState, MatchStateEnum.RuleChecking);
+    }
+
     public void FixedUpdate(float fixedt)
     {
         _currentState.FixedUpdate(fixedt);
@@ -64,11 +71,23 @@ public class MatchManager
         _currentState.Update(dt);
     }
 
-    public Action<TurnInfo> OnNotifyUI;
+    public Action<TurnInfo> OnNotifyInMatch;
 
     public Action<bool> OnBallInHandStarted;
 
     public Action<bool> OnBallInHandFinished;
 
     public Action<int> OnTimerUpdated;
+
+    public Action<List<PlayerInfo>> OnNotifyFinishMatch;
+
+    public Action OnReplayMatch;
+
+    public Action<List<PlayerInfo>> OnShowScoreBar;
+
+    public Action<TurnInfo> OnShowTurn;
+
+    public Action<int> OnShowRaceText;
+
+    public Action<int> OnChangeColorBallPocketed;
 }

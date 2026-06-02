@@ -7,7 +7,13 @@ public class BallParent : MonoBehaviour
     private BallView[] _ballViews;
     private BallState _ballState;
     [SerializeField] private GameObject[] ballPrefabs;
+
     public GameController gameController;
+
+    private void Start()
+    {
+        MatchManager.Instance.OnReplayMatch += RenderBallsForReplayMatch;
+    }
 
     public void Initialize(BallState state)
     {
@@ -29,12 +35,26 @@ public class BallParent : MonoBehaviour
         }
     }
 
+    public void RenderBallsForReplayMatch()
+    {
+        if (_ballState == null || _ballViews == null) return;
+
+        for (int i = 0; i < _ballViews.Length; i++)
+        {
+            PhysicVector3 corePos = _ballState.Positions[i];
+            bool active = _ballState.IsActive[i];
+            Vector3 unityPos = new Vector3(corePos.X, corePos.Y, corePos.Z);
+
+            _ballViews[i].Render(unityPos, active);
+        }
+    }
+
     private void LateUpdate()
     {
+        if (_ballState == null || _ballViews == null) return;
+
         if (gameController.matchManager.CurrentStateEnum != MatchStateEnum.Simulating && 
             !gameController.matchManager._awaitingState.HasBallInHand) return;
-
-        if (_ballState == null || _ballViews == null) return;
 
         for (int i = 0; i < _ballViews.Length; i++)
         {
