@@ -216,7 +216,7 @@ public class PhysicSystem
                 if (_ballState.IsDropping[i] || _ballState.IsDropping[j]) continue;
 
                 float distance = PhysicVector3.Distance(_ballState.Positions[i], _ballState.Positions[j]);
-                float minDistance = _r * 2.01f;
+                float minDistance = _r * 2f;
 
                 if (distance < minDistance)
                 {
@@ -238,6 +238,11 @@ public class PhysicSystem
 
         // Vector noi tam da chuan hoa
         PhysicVector3 collisionNormal = (posI - posJ).Normalize();
+
+        // Xu ly am thanh va cham
+        PhysicVector3 relativeVelocity = velI - velJ;
+        float impactForce = Mathf.Abs(relativeVelocity.Dot(collisionNormal));
+        AudioManager.Instance.PlayBallHitSound(impactForce);
 
         // Dich toa do bi tranh chong lap
         PhysicVector3 separation = collisionNormal * (overlap * 0.5f);

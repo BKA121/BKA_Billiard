@@ -18,5 +18,6 @@ public class ShootCommand : ICommand
     public void Execute()
     {
         _matchManager.ExecuteShoot(_direction, _force);
+        AudioManager.Instance.PlayCueHitSound(_force);
     }
 }
