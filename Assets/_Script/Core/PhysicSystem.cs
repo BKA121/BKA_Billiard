@@ -20,6 +20,9 @@ public class PhysicSystem
     private BallState _ballState;
     private ShotResult _shotResult;
 
+    private PhysicVector3 _wallXNormal = new PhysicVector3(1, 0, 0);
+    private PhysicVector3 _wallZNormal = new PhysicVector3(0, 0, -1);
+
     public PhysicSystem(PhysicData physicData, BallState ballState, ShotResult shotResult)
     {
         _ballState = ballState;
@@ -68,16 +71,21 @@ public class PhysicSystem
             }
 
             // Cap nhat vi tri moi
-            PhysicVector3 newPos = _ballState.Positions[i] + (velocity * dt);
+            PhysicVector3 newPos = _ballState.Positions[i];
 
             if (!_ballState.IsDropping[i])
             {
+                newPos += (velocity * dt);
                 // Xu ly va cham voi thanh bang
                 if ((0 <= newPos.Z - _offsetPocketCenter && newPos.Z - _offsetPocketCenter <= _boundTableZ) ||
                     (0 >= newPos.Z + _offsetPocketCenter && newPos.Z + _offsetPocketCenter >= -_boundTableZ))
                 {
                     if (newPos.X < -_limitX || newPos.X > _limitX)
                     {
+                        // am thanh va cham voi thanh bang dai
+                        float force = Mathf.Abs(velocity.Dot(_wallXNormal));
+                        AudioManager.Instance.PlayBallHitTableSound(force);
+
                         velocity.X = -velocity.X;
                         newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
 
@@ -93,6 +101,10 @@ public class PhysicSystem
                 {
                     if (newPos.Z < -_limitZ || newPos.Z > _limitZ)
                     {
+                        // am thanh va cham voi thanh bang ngan
+                        float force = Mathf.Abs(velocity.Dot(_wallZNormal));
+                        AudioManager.Instance.PlayBallHitTableSound(force);
+
                         velocity.Z = -velocity.Z;
                         newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
 
@@ -127,21 +139,24 @@ public class PhysicSystem
                     if (i == 0) _shotResult.isBall0Pocketed = true;
                     if (i == 8) _shotResult.isBall8Pocketed = true;
 
+                    if (!_ballState.IsDropping[i]) _ballState.DropBall(i);
+
                     PhysicVector3 dirToCenter = (_pockets[p].center - newPos).Normalize();
                     float speed = velocity.Magnitude();
 
-                    velocity = velocity + dirToCenter * (speed + 0.5f) * 3f * dt;
+                    velocity = velocity + dirToCenter * (speed + 0.5f) * 2f * dt;
                     velocity = velocity * 0.98f;
 
-                    float gravityFall = 0.1f * dt;
+                    float gravityFall = 0.18f * dt;
                     float velocityFall = speed * dt;
 
-                    newPos.Y -= (velocityFall + gravityFall);
+                    float force = velocityFall + gravityFall;
 
-                    if (!_ballState.IsDropping[i]) _ballState.DropBall(i);
+                    newPos.Y -= force;
 
-                    if (newPos.Y < -0.14f)
+                    if (newPos.Y < -0.15f)
                     {
+                        AudioManager.Instance.PlayPocketSound(force);
                         _ballState.DeactivateBall(i);
                         velocity.X = 0; velocity.Y = 0; velocity.Z = 0;
                     }
@@ -157,8 +172,18 @@ public class PhysicSystem
 
                 if (dUp < _r || dDown < _r)
                 {
-                    if (dUp < dDown) { finalDistance = dUp; finalQ = upQ; }
-                    else { finalDistance = dDown; finalQ = downQ; }
+                    if (dUp < dDown)
+                    {
+                        finalDistance = dUp; finalQ = upQ;
+                        // Xu ly am thanh khi va cham mieng lo tren
+                        PlayAudio(velocity, _pockets[p].upA, _pockets[p].upB);
+                    }
+                    else
+                    {
+                        finalDistance = dDown; finalQ = downQ;
+                        // Xu ly am thanh khi va cham mieng lo duoi
+                        PlayAudio(velocity, _pockets[p].downA, _pockets[p].downB);
+                    }
                     break; 
                 }
             }
@@ -193,6 +218,17 @@ public class PhysicSystem
             if(!_ballState.IsDropping[i]) velocity *= (1f - _physicData.Mr * dt);
             _ballState.SetVelocity(i, velocity);
         }
+    }
+
+    private void PlayAudio(PhysicVector3 velocity, PhysicVector3 a, PhysicVector3 b)
+    {
+        PhysicVector3 direction = (a - b).Normalize();
+
+        PhysicVector3 normal = new PhysicVector3(-direction.Z, 0f, direction.X);
+
+        float force = Mathf.Abs(velocity.Dot(normal));
+
+        AudioManager.Instance.PlayBallHitTableSound(force);
     }
 
     public PhysicVector3 FindProjectionPoint(PhysicVector3 pBall0, PhysicVector3 a, PhysicVector3 b)

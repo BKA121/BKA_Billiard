@@ -8,6 +8,7 @@ public class MatchPresenter : MonoBehaviour
 {
     public MatchManager matchManager;
     public TMP_Text textFoulDescription;
+    public TMP_Text textNotification;
 
     [SerializeField] private TextMeshProUGUI timerText;
     private Queue<string> _msgQueue = new Queue<string>();
@@ -38,9 +39,10 @@ public class MatchPresenter : MonoBehaviour
             _lastPlayerId = info.currentPlayer;
         }
 
-        if (info.lastFoulType != FoulType.None)
+        if (info.lastFoulType != FoulType.None && info.lastFoulType != FoulType.Quit)
         {
             _msgQueue.Enqueue(info.notifyMessage);
+            if(!info.isGameOver) StartCoroutine(ShowTextFoulNotification());
         }
 
         if (info.isGameOver)
@@ -80,9 +82,18 @@ public class MatchPresenter : MonoBehaviour
         {
             textFoulDescription.text = _msgQueue.Dequeue();
 
-            yield return new WaitForSeconds(4f);
+            yield return new WaitForSeconds(8f);
         }
 
         textFoulDescription.gameObject.SetActive(false);
+    }
+
+    private IEnumerator ShowTextFoulNotification()
+    {
+        textNotification.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(2f);
+
+        textNotification.gameObject.SetActive(false);
     }
 }

@@ -35,4 +35,20 @@ public class PlayerInputController : MonoBehaviour
     {
         return Input.GetKeyDown(KeyCode.M);
     }
+
+    // Ham kiem tra yeu cau thoat van dau
+    public bool IsExitMatch()
+    {
+        return Input.GetKeyDown(KeyCode.Escape);
+    }
+
+    // Ham kiem tra bat tat controls
+    public bool IsShowControls()
+    {
+        return Input.GetKeyDown(KeyCode.T);
+    }
+    public bool IsHideControls()
+    {
+        return Input.GetKeyUp(KeyCode.T);
+    }
 }

@@ -119,7 +119,7 @@ public class InitializingState : IMatchState
     public void Setup8BallPositionForNewMatch()
     {
         float R = _physicData.BallRadius;
-        float diameter = R * 2.01f;
+        float diameter = R * 2.02f;
         float rowDistance = R * 1.734f;
 
         _ballState.SetPosition(0, _physicData.HeadSpot);

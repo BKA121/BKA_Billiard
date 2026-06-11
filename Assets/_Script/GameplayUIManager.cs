@@ -8,8 +8,11 @@ using UnityEngine.UI;
 
 public class GameplayUIManager : MonoBehaviour
 {
+    public PlayerInputController playerInputController;
+
     public GameObject exitConfirmPanel;
     public GameObject matchResultPanel;
+    public GameObject controlsPanel;
 
     // Hien thi ket qua sau match
     public TMP_Text player1WinnerText;
@@ -50,9 +53,18 @@ public class GameplayUIManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (playerInputController.IsExitMatch())
         {
             ToggleExitMenu();
+        }
+
+        if (playerInputController.IsShowControls())
+        {
+            controlsPanel.SetActive(true);
+        }
+        else if (playerInputController.IsHideControls())
+        {
+            controlsPanel.SetActive(false);
         }
     }
 
