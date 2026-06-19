@@ -24,15 +24,31 @@ public class CueAimState : ICueState
         float mouseX = _view.playerInputController.GetHorizontalAxis();
         float mouseY = _view.playerInputController.GetVerticalAxis();
 
-        _interaction.CaculateAngle(mouseX, _view.cameraConfig.sensitivityFirstCam);
-        _interaction.CaculateCameraPitch(mouseY, _view.cameraConfig.minPitch, _view.cameraConfig.maxPitch, _view.cameraConfig.sensitivityFirstCam);
+        if (_view.playerInputController.IsAddSpinAction())
+        {
+            float spinSensitivity = 0.02f;
+            _interaction.CalculateSpinPoint(mouseX, mouseY, spinSensitivity, _view.ballPhysicConfig.radius);
+        }
+        else
+        {
+            _interaction.CaculateAngle(mouseX, _view.cameraConfig.sensitivityFirstCam);
+            _interaction.CaculateCameraPitch(mouseY, _view.cameraConfig.minPitch,
+                                            _view.cameraConfig.maxPitch,
+                                            _view.cameraConfig.sensitivityFirstCam);
+        }
+
     }
 
     public void UpdateView()
     {
-        _view.transform.rotation = Quaternion.Euler(7f, _interaction.CurrentAngle, 0);
+        _view.transform.rotation = Quaternion.Euler(0, _interaction.CurrentAngle, 0);
 
-        _view.transform.position = _interaction.GetPositionAroundBall0(_view.ball0Position);
+        Vector3 basePosition = _interaction.GetPositionAroundBall0(_view.ball0Position);
+
+        Vector3 spinOffset3D = (_view.transform.right * _interaction.CurrentSpinPoint.x) +
+                               (_view.transform.up * _interaction.CurrentSpinPoint.y);
+
+        _view.transform.position = basePosition + spinOffset3D;
 
         if (_view.firstCamera != null)
         {
@@ -48,6 +64,7 @@ public class CueAimState : ICueState
         {
             _view.ChangeState(_view.OverViewState);
         }
+
     }
 
     public void Exit() { }

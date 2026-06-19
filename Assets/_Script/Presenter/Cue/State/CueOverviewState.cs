@@ -49,5 +49,7 @@ public class CueOverviewState : ICueState
         _view.secondCamera.gameObject.SetActive(false);
         _view.cueModel.gameObject.SetActive(true);
         _view.firstCamera.gameObject.SetActive(true);
+
+        _interaction.ResetSpin();
     }
 }

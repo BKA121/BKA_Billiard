@@ -13,7 +13,7 @@ public class SimulatingState : IMatchState
 
     public void Enter()
     { 
-        _matchManager.physicSystem.InitialShoot(_matchManager.gameState.currentShotDirection, _matchManager.gameState.currentShotForce);
+        _matchManager.physicSystem.InitialShoot(_matchManager.gameState.currentShotDirection, _matchManager.gameState.currentShotForce, _matchManager.gameState.currentSpinPoint);
     }
 
     public void Exit()

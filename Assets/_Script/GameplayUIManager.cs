@@ -97,7 +97,7 @@ public class GameplayUIManager : MonoBehaviour
         player2Name.text = listPlayer[1].name;
         player2Score.text = listPlayer[1].score.ToString();
 
-        races.text = "Race to " + MatchManager.Instance.gameState.races.ToString();
+        races.text = "Rack " + MatchManager.Instance.gameState.races.ToString();
     }
 
     public void ShowResultMatch(List<PlayerInfo> listPlayer)

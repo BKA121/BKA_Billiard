@@ -35,6 +35,7 @@ public class CueView : MonoBehaviour
         AimState = new CueAimState(this, _cueInteraction);
         PowerState = new CuePowerState(this, _cueInteraction);
         OverViewState = new CueOverviewState(this, _cueInteraction);
+
         ChangeState(OverViewState);
     }
 

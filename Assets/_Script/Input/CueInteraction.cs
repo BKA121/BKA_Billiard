@@ -14,6 +14,8 @@ public class CueInteraction
 
     public float HeightSecondCam = 0.7f; // Do cao second cam
 
+    public Vector2 CurrentSpinPoint { get; private set; } 
+
     // Ham tinh toan xoay gay de ngam ban
     public void CaculateAngle(float mouseInputX, float sensitivity)
     {
@@ -54,5 +56,17 @@ public class CueInteraction
     public void ResetPull()
     {
         CurrentPull = 0;
+    }
+
+    public void ResetSpin()
+    {
+        CurrentSpinPoint = Vector2.zero;
+    }
+
+    public void CalculateSpinPoint(float mouseX, float mouseY, float sensitivity, float ballRadius)
+    {
+        CurrentSpinPoint += new Vector2(mouseX, mouseY) * sensitivity * Time.deltaTime;
+
+        CurrentSpinPoint = Vector2.ClampMagnitude(CurrentSpinPoint, ballRadius-0.01f);
     }
 }

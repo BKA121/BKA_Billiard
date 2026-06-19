@@ -8,6 +8,7 @@ public class CuePowerState : ICueState
     private CueView _view;
     private CueInteraction _interaction;
     private float _defaultLocalZ; // = radius + offsetFromBall0
+    private PhysicVector2 _currentSpinPoint;
 
     public CuePowerState(CueView view, CueInteraction interaction)
     {
@@ -50,6 +51,8 @@ public class CuePowerState : ICueState
         _interaction.ResetPull();
         if (_view.cueModel != null)
             _view.cueModel.localPosition = new Vector3(0, 0, _defaultLocalZ);
+
+        _interaction.ResetSpin();
     }
 
     private void OnCueHitBall()
@@ -59,8 +62,10 @@ public class CuePowerState : ICueState
 
         // Tinh luc danh
         float force = speed;
+        _currentSpinPoint.X = _interaction.CurrentSpinPoint.x;
+        _currentSpinPoint.Y = _interaction.CurrentSpinPoint.y;
 
-        ICommand shoot = new ShootCommand(CommandDispatcher.Instance.coreManager, dir, force);
+        ICommand shoot = new ShootCommand(CommandDispatcher.Instance.coreManager, dir, force, _currentSpinPoint);
 
         CommandDispatcher.Instance.ExecuteCommand(shoot);
     }

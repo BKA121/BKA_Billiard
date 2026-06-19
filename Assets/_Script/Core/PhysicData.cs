@@ -10,6 +10,50 @@ public struct PocketDataPhysicVector3
     public float rPocket; // ban kinh lo
 }
 
+public struct PhysicQuaternion
+{
+    public float X, Y, Z, W;
+
+    public PhysicQuaternion(float x, float y, float z, float w)
+    {
+        X = x; Y = y; Z = z; W = w;
+    }
+
+    public static PhysicQuaternion Identity => new PhysicQuaternion(0, 0, 0, 1);
+
+    public PhysicQuaternion Normalize()
+    {
+        float mag = (float)System.Math.Sqrt(X * X + Y * Y + Z * Z + W * W);
+        if (mag > 0.00001f)
+        {
+            return new PhysicQuaternion(X / mag, Y / mag, Z / mag, W / mag);
+        }
+        return Identity;
+    }
+
+    public PhysicQuaternion Integrate(PhysicVector3 angularVelocity, float dt)
+    {
+        float dx = angularVelocity.X * dt * 0.5f;
+        float dy = angularVelocity.Y * dt * 0.5f;
+        float dz = angularVelocity.Z * dt * 0.5f;
+
+        float newX = X + (dx * W + dy * Z - dz * Y);
+        float newY = Y + (dy * W + dz * X - dx * Z);
+        float newZ = Z + (dz * W + dx * Y - dy * X);
+        float newW = W + (-dx * X - dy * Y - dz * Z);
+
+        PhysicQuaternion result = new PhysicQuaternion(newX, newY, newZ, newW);
+
+        return result.Normalize();
+    }
+}
+
+    public struct PhysicVector2
+{
+    public float X;
+    public float Y;
+}
+
 public struct PhysicVector3
 {
     public float X;
@@ -56,6 +100,16 @@ public struct PhysicVector3
     public float Dot(PhysicVector3 other)
     {
         return X * other.X + Y * other.Y + Z * other.Z;
+    }
+
+    // Tich co huong
+    public PhysicVector3 Cross(PhysicVector3 other)
+    {
+        return new PhysicVector3(
+            Y * other.Z - Z * other.Y,
+            Z * other.X - X * other.Z,
+            X * other.Y - Y * other.X
+        );
     }
 
     public PhysicVector3 Normalize()

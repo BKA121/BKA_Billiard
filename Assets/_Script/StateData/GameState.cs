@@ -8,6 +8,7 @@ public class GameState
     // Du lieu cu danh hien tai cua nguoi choi
     public float currentShotForce;
     public PhysicVector3 currentShotDirection;
+    public PhysicVector2 currentSpinPoint;
 
     // Du lieu vat ly
     public PhysicData physicData;

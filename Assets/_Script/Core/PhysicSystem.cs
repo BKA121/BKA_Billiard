@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -14,11 +14,17 @@ public class PhysicSystem
     private float _boundTableX;
     private float _boundTableZ;
     private float _r;
+    private float _mBall;
     private PhysicVector3 _direction;
     private PocketDataPhysicVector3[] _pockets;
     private float _force;
     private BallState _ballState;
     private ShotResult _shotResult;
+
+    private float _inertia;
+    private float _gravity = 9f;       
+    private float _muK = 0.075f;         
+    private float _muR = 0.01f;       
 
     private PhysicVector3 _wallXNormal = new PhysicVector3(1, 0, 0);
     private PhysicVector3 _wallZNormal = new PhysicVector3(0, 0, -1);
@@ -30,6 +36,7 @@ public class PhysicSystem
 
         _physicData = physicData;
         _r = _physicData.BallRadius;
+        _mBall = _physicData.mBall;
         _pockets = _physicData.Pockets;
         _limitX = _physicData.Width/2;
         _limitZ = _physicData.Length/2;
@@ -37,9 +44,11 @@ public class PhysicSystem
         _offsetPocketCorner = _physicData.offsetPocketCorner;
         _boundTableX = _limitX - _offsetPocketCorner;
         _boundTableZ = _limitZ - _offsetPocketCorner - _offsetPocketCenter;
-    }
 
-    public void InitialShoot(PhysicVector3 direction, float force)
+        _inertia = 0.4f * _mBall * _r * _r;
+}
+
+    public void InitialShoot(PhysicVector3 direction, float force, PhysicVector2 currentSpinPoint)
     {
         _direction = direction;
         _force = force;
@@ -51,6 +60,26 @@ public class PhysicSystem
         PhysicVector3 initialVelocity = horizontalDir * force;
 
         _ballState.SetVelocity(0, initialVelocity);
+
+        PhysicVector3 forward = horizontalDir;
+        PhysicVector3 up = new PhysicVector3(0f, 1f, 0f);
+        PhysicVector3 right = new PhysicVector3(forward.Z, 0f, -forward.X);
+
+        float x = currentSpinPoint.X;
+        float y = currentSpinPoint.Y;
+        float z = (float)Math.Sqrt(Math.Max(0f, (_r * _r) - (x * x) - (y * y)));
+
+        PhysicVector3 worldOffset = (right * x) + (up * y) - (forward * z);
+        PhysicVector3 impulse = forward * force;
+        float tx = worldOffset.Y * impulse.Z - worldOffset.Z * impulse.Y;
+        float ty = worldOffset.Z * impulse.X - worldOffset.X * impulse.Z;
+        float tz = worldOffset.X * impulse.Y - worldOffset.Y * impulse.X;
+        PhysicVector3 torque = new PhysicVector3(tx, ty, tz);
+
+        PhysicVector3 initialAngularVelocity = new PhysicVector3(torque.X / _inertia, torque.Y / _inertia, torque.Z / _inertia);
+
+        _ballState.AngularVelocities[0] = initialAngularVelocity;
+        _ballState.Rotations[0] = PhysicQuaternion.Identity;
     }
 
     public void UpdatePhysicForFrame(float dt)
@@ -64,11 +93,7 @@ public class PhysicSystem
 
             PhysicVector3 velocity = _ballState.Velocities[i];
 
-            if (velocity.SqrMagnitude() < 0.001f)
-            {
-                _ballState.SetVelocity(i, new PhysicVector3(0, 0, 0));
-                continue;
-            }
+            if (velocity.SqrMagnitude() == 0 && _ballState.AngularVelocities[i].SqrMagnitude() == 0) continue;
 
             // Cap nhat vi tri moi
             PhysicVector3 newPos = _ballState.Positions[i];
@@ -82,37 +107,16 @@ public class PhysicSystem
                 {
                     if (newPos.X < -_limitX || newPos.X > _limitX)
                     {
-                        // am thanh va cham voi thanh bang dai
-                        float force = Mathf.Abs(velocity.Dot(_wallXNormal));
-                        AudioManager.Instance.PlayBallHitTableSound(force);
-
-                        velocity.X = -velocity.X;
-                        newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
-
-                        velocity.X *= _physicData.WallBounce;
-                        if (_shotResult.firstBallHitID != -1 && !_shotResult.ballHitCushionAfterShot.Contains(i))
-                        {
-                            _shotResult.ballHitCushionAfterShot.Add(i);
-                        }
+                        PhysicVector3 wallNormal = new PhysicVector3(newPos.X > 0 ? -1f : 1f, 0f, 0f);
+                        ResolveCushionCollision(i, wallNormal, ref velocity, ref newPos);
                     }
                 }
-
                 if (-_boundTableX <= newPos.X && newPos.X <= _boundTableX)
                 {
                     if (newPos.Z < -_limitZ || newPos.Z > _limitZ)
                     {
-                        // am thanh va cham voi thanh bang ngan
-                        float force = Mathf.Abs(velocity.Dot(_wallZNormal));
-                        AudioManager.Instance.PlayBallHitTableSound(force);
-
-                        velocity.Z = -velocity.Z;
-                        newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
-
-                        velocity.Z *= _physicData.WallBounce;
-                        if (_shotResult.firstBallHitID != -1 && !_shotResult.ballHitCushionAfterShot.Contains(i))
-                        {
-                            _shotResult.ballHitCushionAfterShot.Add(i);
-                        }
+                        PhysicVector3 wallNormal = new PhysicVector3(0f, 0f, newPos.Z > 0 ? -1f : 1f);
+                        ResolveCushionCollision(i, wallNormal, ref velocity, ref newPos);
                     }
                 }
             }
@@ -187,7 +191,6 @@ public class PhysicSystem
                     break; 
                 }
             }
-
             // Xy ly va cham mom lo
             if (finalDistance > 0 && !_ballState.IsDropping[i])
             {
@@ -214,10 +217,98 @@ public class PhysicSystem
 
             _ballState.SetPosition(i, newPos);
 
-            // Giam van toc moi frame do ma sat lan
-            if(!_ballState.IsDropping[i]) velocity *= (1f - _physicData.Mr * dt);
-            _ballState.SetVelocity(i, velocity);
+            // Xu ly ma sat va xoay
+            if (!_ballState.IsDropping[i])
+            {
+                PhysicVector3 angularVel = _ballState.AngularVelocities[i];
+                PhysicVector3 rDown = new PhysicVector3(0, -_r, 0);
+                PhysicVector3 vContact = velocity + angularVel.Cross(rDown); // van toc tai diem tiep xuc
+                float vContactMag = vContact.Magnitude();
+
+                // Luong giam van toc toi da trong 1frame
+                float maxVContactDrop = 2.5f * _muK * _gravity * dt; 
+
+                if (vContactMag > maxVContactDrop)
+                {
+                    PhysicVector3 slideDirection = vContact.Normalize();
+                    // vector ma sat truot
+                    PhysicVector3 frictionForce = slideDirection * (-_muK * _mBall * _gravity);
+
+                    velocity = velocity + (frictionForce * (1f / _mBall)) * dt;
+
+                    PhysicVector3 torque = rDown.Cross(frictionForce);
+                    angularVel = angularVel + (torque * (1f / _inertia)) * dt;
+                }
+                else
+                {
+                    float vMag = velocity.Magnitude();
+
+                    float maxVRollDrop = _muR * _gravity * dt;
+
+                    if (vMag > maxVRollDrop)
+                    {
+                        PhysicVector3 rollDirection = velocity.Normalize();
+                        velocity = velocity - (rollDirection * maxVRollDrop);
+
+                        PhysicVector3 rUp = new PhysicVector3(0, _r, 0);
+                        angularVel = rUp.Cross(velocity) * (1f / (_r * _r));
+                    }
+                    else
+                    {
+                        velocity = new PhysicVector3(0, 0, 0);
+                        angularVel = new PhysicVector3(0, 0, 0);
+                    }
+                }
+
+                _ballState.SetVelocity(i, velocity);
+                _ballState.AngularVelocities[i] = angularVel;
+
+                if (angularVel.SqrMagnitude() > 0.01f)
+                {
+                    _ballState.Rotations[i] = _ballState.Rotations[i].Integrate(angularVel, dt);
+                }
+            }
         }
+    }
+
+    private void ResolveCushionCollision(int ballIndex, PhysicVector3 wallNormal, ref PhysicVector3 velocity, ref PhysicVector3 newPos)
+    {
+        float forceRatio = Mathf.Abs(velocity.Dot(wallNormal));
+        AudioManager.Instance.PlayBallHitTableSound(forceRatio);
+
+        if (_shotResult.firstBallHitID != -1 && !_shotResult.ballHitCushionAfterShot.Contains(ballIndex))
+        {
+            _shotResult.ballHitCushionAfterShot.Add(ballIndex);
+        }
+
+        PhysicVector3 currentAngularVel = _ballState.AngularVelocities[ballIndex];
+
+        if (wallNormal.X != 0)
+        {
+            velocity.X = -velocity.X * _physicData.WallBounce;
+            newPos.X = newPos.X < -_limitX ? -_limitX : _limitX;
+        }
+        else if (wallNormal.Z != 0)
+        {
+            velocity.Z = -velocity.Z * _physicData.WallBounce;
+            newPos.Z = newPos.Z < -_limitZ ? -_limitZ : _limitZ;
+        }
+
+        PhysicVector3 rContact = wallNormal * -_r;
+        PhysicVector3 vContact = velocity + currentAngularVel.Cross(rContact);
+        PhysicVector3 vSlide = vContact - (wallNormal * vContact.Dot(wallNormal));
+
+        float cushionFriction = 0.07f;
+        PhysicVector3 frictionImpulse = vSlide * -cushionFriction;
+
+        frictionImpulse.Y = 0f;
+
+        velocity = velocity + frictionImpulse;
+
+        velocity.Y = 0f;
+
+        PhysicVector3 torque = rContact.Cross(frictionImpulse);
+        _ballState.AngularVelocities[ballIndex] = currentAngularVel + (torque * (1f / _inertia));
     }
 
     private void PlayAudio(PhysicVector3 velocity, PhysicVector3 a, PhysicVector3 b)
@@ -314,7 +405,7 @@ public class PhysicSystem
         {
             if (!_ballState.IsActive[i]) continue;
 
-            if (_ballState.Velocities[i].SqrMagnitude() != 0) return false;
+            if (_ballState.Velocities[i].SqrMagnitude() != 0 || _ballState.AngularVelocities[i].SqrMagnitude() != 0) return false;
         }
         return true;
     }

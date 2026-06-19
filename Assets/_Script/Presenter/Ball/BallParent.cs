@@ -44,8 +44,10 @@ public class BallParent : MonoBehaviour
             PhysicVector3 corePos = _ballState.Positions[i];
             bool active = _ballState.IsActive[i];
             Vector3 unityPos = new Vector3(corePos.X, corePos.Y, corePos.Z);
+            PhysicQuaternion coreQuat = _ballState.Rotations[i];
+            Quaternion unityQuat = new Quaternion(coreQuat.X, coreQuat.Y, coreQuat.Z, coreQuat.W);
 
-            _ballViews[i].Render(unityPos, active);
+            _ballViews[i].Render(unityPos, unityQuat, active);
         }
     }
 
@@ -71,7 +73,10 @@ public class BallParent : MonoBehaviour
 
             Vector3 unityPos = new Vector3(corePos.X, corePos.Y, corePos.Z);
 
-            _ballViews[i].Render(unityPos, active);
+            PhysicQuaternion coreQuat = _ballState.Rotations[i];
+            Quaternion unityQuat = new Quaternion(coreQuat.X, coreQuat.Y, coreQuat.Z, coreQuat.W);
+
+            _ballViews[i].Render(unityPos, unityQuat, active);
         }
     }
 }

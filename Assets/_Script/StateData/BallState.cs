@@ -7,6 +7,8 @@ public class BallState
     public int TotalBalls { get; }
     public PhysicVector3[] Positions { get; private set; }
     public PhysicVector3[] Velocities { get; private set; }
+    public PhysicVector3[] AngularVelocities { get; private set; } // luu truc xoay va toc do xoay
+    public PhysicQuaternion[] Rotations { get; private set; } // luu cau truc quaternion cho presenter
     public bool[] IsActive { get; private set; }
     public bool[] IsDropping { get; private set; }
 
@@ -15,6 +17,8 @@ public class BallState
         TotalBalls = totalBalls;
         Positions = new PhysicVector3[totalBalls];
         IsActive = new bool[totalBalls];
+        AngularVelocities = new PhysicVector3[totalBalls];
+        Rotations = new PhysicQuaternion[totalBalls];
         Velocities = new PhysicVector3[totalBalls];
         IsDropping = new bool[totalBalls];
 
@@ -22,6 +26,8 @@ public class BallState
         {
             IsActive[i] = true;
             IsDropping[i] = false;
+            Rotations[i] = PhysicQuaternion.Identity;
+            AngularVelocities[i] = new PhysicVector3(0, 0, 0);
         }
     }
 
@@ -32,6 +38,8 @@ public class BallState
             IsActive[i] = true;
             IsDropping[i] = false;
             Velocities[i].X = 0; Velocities[i].Y = 0; Velocities[i].Z = 0;
+            Rotations[i] = PhysicQuaternion.Identity;
+            AngularVelocities[i] = new PhysicVector3(0, 0, 0);
         }
     }
 

@@ -51,4 +51,10 @@ public class PlayerInputController : MonoBehaviour
     {
         return Input.GetKeyUp(KeyCode.T);
     }
+
+    // Ham them xoay bi
+    public bool IsAddSpinAction()
+    {
+        return Input.GetKey(KeyCode.E);
+    }
 }

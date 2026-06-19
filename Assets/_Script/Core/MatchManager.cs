@@ -47,10 +47,11 @@ public class MatchManager
         _currentState.Enter();
     }
 
-    public void ExecuteShoot(PhysicVector3 direction, float force)
+    public void ExecuteShoot(PhysicVector3 direction, float force, PhysicVector2 spinPoint)
     {
         gameState.currentShotDirection = direction;
         gameState.currentShotForce = force;
+        gameState.currentSpinPoint = spinPoint;
 
         ChangeState(_simulatingState, MatchStateEnum.Simulating);
     }
