@@ -6,6 +6,9 @@ using UnityEngine;
 public class CueInteraction 
 {
     private float _lastPull;
+    private bool _isPushingForward = false;
+    private float _pushStartTime;
+    private float _pushStartDistance;
 
     public float CurrentAngle { get; private set; }
     public float CameraPitch { get; private set; } // Goc di chuyen cua camera player
@@ -42,8 +45,41 @@ public class CueInteraction
         CurrentPull -= mouseInputY * Time.deltaTime * sensitivity;
         CurrentPull = Mathf.Clamp(CurrentPull, -0.01f, maxPull); // -0.01f la khi cham bi trang
 
-        float frameVelocity = (_lastPull - CurrentPull) / Time.deltaTime;
-        CurrentStrikeSpeed = Mathf.Lerp(CurrentStrikeSpeed, Mathf.Max(0, frameVelocity), 0.5f);
+        float frameSpeed = (_lastPull - CurrentPull) / Time.deltaTime;
+
+        if (CurrentPull < _lastPull) 
+        {
+            if (!_isPushingForward)
+            {
+                _isPushingForward = true;
+                _pushStartTime = Time.time;
+                _pushStartDistance = _lastPull;
+            }
+            else
+            {
+                float stopThreshold = 0.1f; 
+
+                if (frameSpeed < stopThreshold)
+                {
+                    _pushStartTime = Time.time;
+                    _pushStartDistance = CurrentPull;
+                }
+            }
+        }
+        else if (CurrentPull > _lastPull)
+        {
+            _isPushingForward = false;
+        }
+
+        if (CurrentPull <= -0.01f && _isPushingForward)
+        {
+            float pushDuration = Mathf.Max(0.001f, Time.time - _pushStartTime);
+            float pushDistance = _pushStartDistance - CurrentPull;
+
+            CurrentStrikeSpeed = pushDistance / pushDuration;
+
+            _isPushingForward = false;
+        }
     }
 
     // Tinh do cao second camera

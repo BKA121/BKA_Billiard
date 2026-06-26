@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: CuePhysicConfig
   m_EditorClassIdentifier: 
   offsetFromBall0: 0.01
-  maxPull: 0.4
+  maxPull: 0.45
   sensitivityPull: 1
   forceMultiplier: 0.8

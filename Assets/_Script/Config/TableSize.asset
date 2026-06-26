@@ -15,7 +15,7 @@ MonoBehaviour:
   length: 2.5428
   width: 1.2424
   Mr: 0.35
-  WallBounce: 0.75
+  WallBounce: 0.8
   offsetPocketCorner: 0.0702
   offsetPocketCenter: 0.0897
   pockets:

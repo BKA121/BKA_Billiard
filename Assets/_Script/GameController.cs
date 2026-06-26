@@ -5,13 +5,6 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public MatchManager matchManager;
-    public float dt, fixedt;
-
-    private void Start()
-    {
-        dt = Time.deltaTime;
-        fixedt = Time.fixedDeltaTime;
-    }
 
     public void Initialized(MatchManager matchManager)
     {
@@ -22,13 +15,13 @@ public class GameController : MonoBehaviour
     {
         if (matchManager == null) return;
 
-        matchManager.FixedUpdate(fixedt);
+        matchManager.FixedUpdate(Time.fixedDeltaTime);
     }
 
     void Update()
     {
         if (matchManager == null) return;
 
-        matchManager.Update(dt);
+        matchManager.Update(Time.deltaTime);
     }
 }

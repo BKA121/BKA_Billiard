@@ -22,12 +22,10 @@ public class PhysicSystem
     private ShotResult _shotResult;
 
     private float _inertia;
-    private float _gravity = 9f;       
-    private float _muK = 0.075f;         
-    private float _muR = 0.01f;       
-
-    private PhysicVector3 _wallXNormal = new PhysicVector3(1, 0, 0);
-    private PhysicVector3 _wallZNormal = new PhysicVector3(0, 0, -1);
+    private float _gravity = 7f;       
+    private float _muK = 0.15f;         
+    private float _muR = 0.01f;
+    private float div = 5f;
 
     public PhysicSystem(PhysicData physicData, BallState ballState, ShotResult shotResult)
     {
@@ -76,7 +74,7 @@ public class PhysicSystem
         float tz = worldOffset.X * impulse.Y - worldOffset.Y * impulse.X;
         PhysicVector3 torque = new PhysicVector3(tx, ty, tz);
 
-        PhysicVector3 initialAngularVelocity = new PhysicVector3(torque.X / _inertia, torque.Y / _inertia, torque.Z / _inertia);
+        PhysicVector3 initialAngularVelocity = new PhysicVector3(torque.X / div / _inertia, torque.Y / div / _inertia, torque.Z / div / _inertia);
 
         _ballState.AngularVelocities[0] = initialAngularVelocity;
         _ballState.Rotations[0] = PhysicQuaternion.Identity;
@@ -226,7 +224,7 @@ public class PhysicSystem
                 float vContactMag = vContact.Magnitude();
 
                 // Luong giam van toc toi da trong 1frame
-                float maxVContactDrop = 2.5f * _muK * _gravity * dt; 
+                float maxVContactDrop = 2f * _muK * _gravity * dt; 
 
                 if (vContactMag > maxVContactDrop)
                 {
@@ -276,6 +274,8 @@ public class PhysicSystem
         float forceRatio = Mathf.Abs(velocity.Dot(wallNormal));
         AudioManager.Instance.PlayBallHitTableSound(forceRatio);
 
+        if (velocity.Dot(wallNormal) > 0) return;
+
         if (_shotResult.firstBallHitID != -1 && !_shotResult.ballHitCushionAfterShot.Contains(ballIndex))
         {
             _shotResult.ballHitCushionAfterShot.Add(ballIndex);
@@ -298,7 +298,7 @@ public class PhysicSystem
         PhysicVector3 vContact = velocity + currentAngularVel.Cross(rContact);
         PhysicVector3 vSlide = vContact - (wallNormal * vContact.Dot(wallNormal));
 
-        float cushionFriction = 0.07f;
+        float cushionFriction = 0.1f;
         PhysicVector3 frictionImpulse = vSlide * -cushionFriction;
 
         frictionImpulse.Y = 0f;

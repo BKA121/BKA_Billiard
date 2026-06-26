@@ -6,7 +6,7 @@ public class NotifyingState : IMatchState
 {
     private MatchManager _matchManager;
     private float _displayTimer;
-    private const float DISPLAY_DURATION = 2f;
+    private const float DISPLAY_DURATION = 1f;
 
     public NotifyingState(MatchManager matchManager)
     {
@@ -37,10 +37,7 @@ public class NotifyingState : IMatchState
         {
             if (_matchManager.gameState.currentTurnInfo.isGameOver)
             {
-                // Chuyen man hinh thong bao ket qua van dau
-                var listPlayer = _matchManager.gameState.listPlayer;
-
-                _matchManager.OnNotifyFinishMatch?.Invoke(listPlayer);
+                _matchManager.ChangeState(_matchManager._finishState, MatchStateEnum.GameOver);
             }
             else
             {

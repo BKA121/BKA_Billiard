@@ -12,6 +12,7 @@ public class MatchManager
     public SimulatingState _simulatingState;
     public RuleCheckingState _ruleCheckingState;
     public NotifyingState _notifyingState;
+    public FinishState _finishState;
 
     public MatchStateEnum CurrentStateEnum { get; private set; }
     public PhysicSystem physicSystem;
@@ -32,6 +33,7 @@ public class MatchManager
         _simulatingState = new SimulatingState(this);
         _ruleCheckingState = new RuleCheckingState(this);
         _notifyingState = new NotifyingState(this);
+        _finishState = new FinishState(this);
     }
 
     public void StartMatch()

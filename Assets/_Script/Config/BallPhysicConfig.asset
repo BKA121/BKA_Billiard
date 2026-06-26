@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: BallPhysicConfig
   m_EditorClassIdentifier: 
   radius: 0.033
+  mass: 0.17
+  restitution: 0.99

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameplayUIManager : MonoBehaviour
+public class GameSceneUIManager : MonoBehaviour
 {
     public PlayerInputController playerInputController;
 
@@ -169,6 +169,6 @@ public class GameplayUIManager : MonoBehaviour
     public void OnExitClicked()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("HomeScene");
     }
 }
