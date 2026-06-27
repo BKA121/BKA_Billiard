@@ -57,4 +57,9 @@ public class PlayerInputController : MonoBehaviour
     {
         return Input.GetKey(KeyCode.E);
     }
+
+    public bool IsZoomActionInOverView()
+    {
+        return Input.GetMouseButton(0);
+    }
 }

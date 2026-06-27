@@ -93,4 +93,6 @@ public class MatchManager
     public Action<int> OnShowRaceText;
 
     public Action<int> OnChangeColorBallPocketed;
+
+    public Action OnResetBall8;
 }

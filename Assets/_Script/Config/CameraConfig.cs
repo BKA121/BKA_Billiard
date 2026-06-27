@@ -14,6 +14,11 @@ public class CameraConfig : ScriptableObject
     public float maxHeight = 0.7f;
     public float heightSpeed = 2f;
 
+    // Khoang cach camera 2 theo phuong ngang toi ban
+    public float minDistance = -2.4f;
+    public float maxDistance = -1f;
+    public float horizontalSpeed = 2f;
+
     // Do nhay camera
     public float sensitivityFirstCam = 5f;
     public float sensitivitySecondCam = 7f;

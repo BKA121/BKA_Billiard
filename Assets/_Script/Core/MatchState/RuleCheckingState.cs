@@ -79,7 +79,6 @@ public class RuleCheckingState : IMatchState
         CheckFoul(result, turnInfo, currentPlayer, otherPlayer);
 
         // Quyet dinh luot danh moi
-        turnInfo.isBreakShot = false;
         turnInfo.hasBallInHand = false;
         turnInfo.lastFoulType = _hasFoul;
         if(_hasFoul != FoulType.None) turnInfo.notifyMessage = GetFoulMessage(_hasFoul);
@@ -155,8 +154,11 @@ public class RuleCheckingState : IMatchState
 
                 safetyCounter++;
             }
+            _matchManager.OnResetBall8?.Invoke();
             _matchManager.OnChangeColorBallPocketed?.Invoke(8);
         }
+
+        turnInfo.isBreakShot = false;
 
         // Dat lai bi trang
         if (result.isBall0Pocketed && !_win)
@@ -196,7 +198,6 @@ public class RuleCheckingState : IMatchState
 
                 safetyCounter++;
             }
-
         }
     }
 

@@ -132,6 +132,8 @@ public class PhysicSystem
                 // Xu ly roi xuong lo
                 if (distanceToCenter < _pockets[p].rPocket || _ballState.IsDropping[i])
                 {
+                    if (!_ballState.IsDropping[i]) _ballState.DropBall(i);
+
                     if (!_shotResult.pocketedBallIDs.Contains(i))
                     {
                         _shotResult.pocketedBallIDs.Add(i);
@@ -140,8 +142,6 @@ public class PhysicSystem
 
                     if (i == 0) _shotResult.isBall0Pocketed = true;
                     if (i == 8) _shotResult.isBall8Pocketed = true;
-
-                    if (!_ballState.IsDropping[i]) _ballState.DropBall(i);
 
                     PhysicVector3 dirToCenter = (_pockets[p].center - newPos).Normalize();
                     float speed = velocity.Magnitude();
@@ -160,7 +160,11 @@ public class PhysicSystem
                     {
                         AudioManager.Instance.PlayPocketSound(force);
                         _ballState.DeactivateBall(i);
-                        velocity.X = 0; velocity.Y = 0; velocity.Z = 0;
+                        _ballState.SetVelocity(i, new PhysicVector3(0f, 0f, 0f));
+                        _ballState.AngularVelocities[i].X = 0f;
+                        _ballState.AngularVelocities[i].Y = 0f;
+                        _ballState.AngularVelocities[i].Z = 0f;
+                        continue;
                     }
                     break;
                 }

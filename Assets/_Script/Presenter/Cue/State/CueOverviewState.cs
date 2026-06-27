@@ -28,15 +28,24 @@ public class CueOverviewState : ICueState
         float mouseX = _view.playerInputController.GetHorizontalAxis();
         float mouseY = _view.playerInputController.GetVerticalAxis();
 
-        _interaction.CaculateAngle(mouseX, _view.cameraConfig.sensitivitySecondCam);
-        _interaction.CaculateHeightSecondCam(mouseY, _view.cameraConfig.minHeight, _view.cameraConfig.maxHeight, _view.cameraConfig.heightSpeed);
+        if (_view.playerInputController.IsZoomActionInOverView())
+        {
+            _interaction.CaculateDistanceHorizontalSecondCam(mouseY, _view.cameraConfig.minDistance, 
+                _view.cameraConfig.maxDistance, _view.cameraConfig.horizontalSpeed);
+        }
+        else
+        {
+            _interaction.CaculateAngle(mouseX, _view.cameraConfig.sensitivitySecondCam);
+            _interaction.CaculateHeightSecondCam(mouseY, _view.cameraConfig.minHeight, _view.cameraConfig.maxHeight, 
+                                                 _view.cameraConfig.heightSpeed);
+        }
     }
 
     public void UpdateView()
     {
         _view.secondCamera.transform.LookAt(_view.overviewAnchor.position);
         _view.overviewAnchor.rotation = Quaternion.Euler(0, _interaction.CurrentAngle, 0);
-        _view.cameraOffset.localPosition = new Vector3(0, _interaction.HeightSecondCam, -1.7f);
+        _view.cameraOffset.localPosition = new Vector3(0, _interaction.HeightSecondCam, _interaction.CameraEdgeDistance);
 
         if (_view.playerInputController.IsSwitchViewPressed() && MatchManager.Instance.CurrentStateEnum == MatchStateEnum.Awaiting)
         {

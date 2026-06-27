@@ -16,6 +16,7 @@ public class CueInteraction
     public float CurrentStrikeSpeed { get; private set; } // Van toc danh bi trong 1 frame
 
     public float HeightSecondCam = 0.7f; // Do cao second cam
+    public float CameraEdgeDistance = -1.7f;  // Khoang cach camera 2 toi canh ban
 
     public Vector2 CurrentSpinPoint { get; private set; } 
 
@@ -87,6 +88,13 @@ public class CueInteraction
     {
         HeightSecondCam += mouseInputY * heightSpeed * Time.deltaTime;
         HeightSecondCam = Mathf.Clamp(HeightSecondCam, minHeight, maxHeight);
+    }
+
+    // Tinh vi tri khi zoom camera 2
+    public void CaculateDistanceHorizontalSecondCam(float mouseInputY, float minDistance, float maxDistance, float sensitivity)
+    {
+        CameraEdgeDistance -= mouseInputY * sensitivity * Time.deltaTime;
+        CameraEdgeDistance = Mathf.Clamp(CameraEdgeDistance, minDistance, maxDistance);
     }
 
     public void ResetPull()

@@ -7,6 +7,7 @@ public class BallParent : MonoBehaviour
     private BallView[] _ballViews;
     private Transform[] _shadowTransforms;
     private BallState _ballState;
+    private bool _resetBall8 = false;
     [SerializeField] private GameObject[] ballPrefabs;
     [SerializeField] private GameObject shadowPrefab;
     private float shadowPosY = -0.0329f;
@@ -17,6 +18,7 @@ public class BallParent : MonoBehaviour
     private void Start()
     {
         MatchManager.Instance.OnReplayMatch += RenderBallsForReplayMatch;
+        MatchManager.Instance.OnResetBall8 += ResetBall8;
     }
 
     public void Initialize(BallState state)
@@ -63,16 +65,22 @@ public class BallParent : MonoBehaviour
         }
     }
 
+    public void ResetBall8()
+    {
+        _resetBall8 = true;
+    }
+
     private void LateUpdate()
     {
         if (_ballState == null || _ballViews == null) return;
 
         if (gameController.matchManager.CurrentStateEnum != MatchStateEnum.Simulating && 
-            !gameController.matchManager._awaitingState.HasBallInHand) return;
+            !gameController.matchManager._awaitingState.HasBallInHand && !_resetBall8) return;
 
         for (int i = 0; i < _ballViews.Length; i++)
         {
             if (gameController.matchManager._awaitingState.HasBallInHand && i != 0) continue;
+            if (_resetBall8) _resetBall8 = false;
 
             if (_ballState.IsDropping[i])
             {

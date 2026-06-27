@@ -147,6 +147,8 @@ public class GameSceneUIManager : MonoBehaviour
     {
         if(ballID > 0)
             balls[ballID - 1].color = pocketedColor;
+        if (ballID == 8 && !MatchManager.Instance.gameState.ballState.IsDropping[8])
+            balls[ballID - 1].color = originalColor;
     }
 
     public void OnReplayClicked()

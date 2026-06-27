@@ -1837,7 +1837,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -223.25519, y: 0}
+  m_AnchoredPosition: {x: -293, y: 0}
   m_SizeDelta: {x: 250.77, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &425995894
@@ -1861,7 +1861,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Shoot\r\nSpin\r\n\rCue Angle\r\n\rPick / Place Ball\r\n\rSwitch View\r\n\rAim\r\n\rMove
-    Camera\nExit Match"
+    Camera\nExit Match\nZoom Camera"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -6030,8 +6030,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 180.63367, y: 0}
-  m_SizeDelta: {x: 395.9, y: 500}
+  m_AnchoredPosition: {x: 172, y: 0}
+  m_SizeDelta: {x: 533.8, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1473384111
 MonoBehaviour:
@@ -6054,7 +6054,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Hold [S] + Push Mouse\r\n\rHold [E] + Move Mouse\r\n\rHold [J] + Mouse
-    Up/Down\r\n\r[M]\r\n\r[V]\r\n\rMove Mouse (View 1)\r\n\rDrag Mouse (View 2)\n[Esc]"
+    Up/Down\r\n\r[M]\r\n\r[V]\r\n\rMove Mouse (View 1)\r\n\rDrag Mouse (View 2)\n[Esc]\nHold
+    L-Click + Drag Mouse (View 2)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}

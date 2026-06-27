@@ -6,7 +6,7 @@ public class NotifyingState : IMatchState
 {
     private MatchManager _matchManager;
     private float _displayTimer;
-    private const float DISPLAY_DURATION = 1f;
+    private const float DISPLAY_DURATION = 0.5f;
 
     public NotifyingState(MatchManager matchManager)
     {

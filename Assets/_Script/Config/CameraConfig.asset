@@ -17,5 +17,8 @@ MonoBehaviour:
   minHeight: 0.1
   maxHeight: 0.7
   heightSpeed: 0.4
+  minDistance: -2.4
+  maxDistance: -1
+  horizontalSpeed: 0.5
   sensitivityFirstCam: 5
   sensitivitySecondCam: 15
