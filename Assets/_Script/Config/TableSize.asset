@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   length: 2.5428
   width: 1.2424
-  Mr: 0.35
-  WallBounce: 0.8
+  WallBounce: 0.75
   offsetPocketCorner: 0.0702
   offsetPocketCenter: 0.0897
   pockets:

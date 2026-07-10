@@ -39,7 +39,7 @@ public class GameInitializer : MonoBehaviour
         }
 
         return new PhysicData(
-            tableConfig.length, tableConfig.width, tableConfig.Mr, tableConfig.WallBounce, tableConfig.offsetPocketCorner, tableConfig.offsetPocketCenter,
+            tableConfig.length, tableConfig.width, tableConfig.WallBounce, tableConfig.offsetPocketCorner, tableConfig.offsetPocketCenter,
             ballConfig.radius, ballConfig.mass, ballConfig.restitution,
             headSpot,
             footSpot,

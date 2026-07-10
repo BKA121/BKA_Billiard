@@ -19,7 +19,6 @@ public class TableSize : ScriptableObject
     public float length = 2.5428f;         // Chieu dai table
     public float width = 1.2424f;          // Chieu rong table
 
-    public float Mr = 0.99f;               // Sau moi frame thi giam di 0.01 do ma sat lan
     public float WallBounce = 0.8f;        // He so nay bang cua ban
 
     // Vi tri duong line pha bi, co do dai z: [-width/2; width/2]

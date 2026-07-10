@@ -146,10 +146,10 @@ public class PhysicSystem
                     PhysicVector3 dirToCenter = (_pockets[p].center - newPos).Normalize();
                     float speed = velocity.Magnitude();
 
-                    velocity = velocity + dirToCenter * (speed + 0.5f) * 2f * dt;
-                    velocity = velocity * 0.98f;
+                    //velocity = velocity + dirToCenter * (speed + 0.5f) * 2f * dt;
+                    //velocity = velocity * 0.98f;
 
-                    float gravityFall = 0.18f * dt;
+                    float gravityFall = 0.2f * dt;
                     float velocityFall = speed * dt;
 
                     float force = velocityFall + gravityFall;
@@ -228,7 +228,7 @@ public class PhysicSystem
                 float vContactMag = vContact.Magnitude();
 
                 // Luong giam van toc toi da trong 1frame
-                float maxVContactDrop = 2f * _muK * _gravity * dt; 
+                float maxVContactDrop = 20f * _muK * _gravity * dt; 
 
                 if (vContactMag > maxVContactDrop)
                 {
@@ -245,20 +245,45 @@ public class PhysicSystem
                 {
                     float vMag = velocity.Magnitude();
 
+                    // ma sat lan trong 1 frame
                     float maxVRollDrop = _muR * _gravity * dt;
 
                     if (vMag > maxVRollDrop)
                     {
+                        // van toc bi giam do ma sat lan
                         PhysicVector3 rollDirection = velocity.Normalize();
                         velocity = velocity - (rollDirection * maxVRollDrop);
 
+                        float currentSideSpinY = angularVel.Y;
+
                         PhysicVector3 rUp = new PhysicVector3(0, _r, 0);
-                        angularVel = rUp.Cross(velocity) * (1f / (_r * _r));
+                        PhysicVector3 pureRollAngular = rUp.Cross(velocity) * (1f / (_r * _r));
+
+                        float spinFrictionDrop = 0.5f * dt;
+
+                        if (currentSideSpinY > 0)
+                        {
+                            currentSideSpinY = Mathf.Max(0, currentSideSpinY - spinFrictionDrop);
+                        }
+                        else if (currentSideSpinY < 0)
+                        {
+                            currentSideSpinY = Mathf.Min(0, currentSideSpinY + spinFrictionDrop);
+                        }
+
+                        angularVel = new PhysicVector3(pureRollAngular.X, currentSideSpinY, pureRollAngular.Z);
                     }
                     else
                     {
                         velocity = new PhysicVector3(0, 0, 0);
-                        angularVel = new PhysicVector3(0, 0, 0);
+
+                        float currentSideSpinY = angularVel.Y;
+
+                        currentSideSpinY *= 0.95f;
+
+                        if (Mathf.Abs(currentSideSpinY) < 0.05f)
+                            currentSideSpinY = 0;
+
+                        angularVel = new PhysicVector3(0, currentSideSpinY, 0);
                     }
                 }
 
@@ -312,7 +337,7 @@ public class PhysicSystem
         velocity.Y = 0f;
 
         PhysicVector3 torque = rContact.Cross(frictionImpulse);
-        _ballState.AngularVelocities[ballIndex] = currentAngularVel + (torque * (1f / _inertia));
+        _ballState.AngularVelocities[ballIndex] = currentAngularVel + (torque / 20f / _inertia );
     }
 
     private void PlayAudio(PhysicVector3 velocity, PhysicVector3 a, PhysicVector3 b)
@@ -409,7 +434,7 @@ public class PhysicSystem
         {
             if (!_ballState.IsActive[i]) continue;
 
-            if (_ballState.Velocities[i].SqrMagnitude() != 0 || _ballState.AngularVelocities[i].SqrMagnitude() != 0) return false;
+            if (_ballState.Velocities[i].SqrMagnitude() > 0.0001f || _ballState.AngularVelocities[i].SqrMagnitude() > 0.0001f) return false;
         }
         return true;
     }

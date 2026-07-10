@@ -5073,6 +5073,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cue001
       objectReference: {fileID: 0}
+    - target: {fileID: 86886273259182648, guid: 9c4ea8181f105a24e96c0c1ce76c0d4b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3433595576868249395, guid: 9c4ea8181f105a24e96c0c1ce76c0d4b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

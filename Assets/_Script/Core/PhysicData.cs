@@ -128,7 +128,6 @@ public class PhysicData
     public PhysicVector3 HeadSpot { get; }
     public PhysicVector3 FootSpot { get; }
     public PocketDataPhysicVector3[] Pockets { get; }
-    public float Mr { get; } // ma sat lan
     public float WallBounce { get; } // he so nay thanh bang
     public float offsetPocketCorner { get; }
     public float offsetPocketCenter { get; }
@@ -140,13 +139,12 @@ public class PhysicData
     public float ballRestitution { get; } // he so hoi phuc sau va cham bi
 
 
-    public PhysicData(float length, float width, float Mr, float WallBounce, float offsetPocketCorner, float offsetPocketCenter,
+    public PhysicData(float length, float width, float WallBounce, float offsetPocketCorner, float offsetPocketCenter,
                       float ballRadius, float mass, float ballRestitution,
                       PhysicVector3 headSpot, PhysicVector3 footSpot, PocketDataPhysicVector3[] pockets)
     {
         Length = length;
         Width = width;
-        this.Mr = Mr;
         this.WallBounce = WallBounce;
         this.offsetPocketCorner = offsetPocketCorner;
         this.offsetPocketCenter = offsetPocketCenter;
